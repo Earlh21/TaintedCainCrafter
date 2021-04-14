@@ -1,0 +1,82 @@
+<Window x:Class="TaintedCain.ItemViewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:TaintedCain"
+        mc:Ignorable="d"
+        Title="{Binding ElementName=IViewWindow, Path=Item.Name}" Width="200" SizeToContent="Height"
+        ResizeMode="NoResize"
+        Name="IViewWindow">
+
+    <Window.CommandBindings>
+        <CommandBinding Command="local:Commands.CraftItem" Executed="CraftItem_OnExecute" />
+    </Window.CommandBindings>
+
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding ElementName=IViewWindow, Path=Item.Name}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,10" />
+
+        <Image HorizontalAlignment="Center" Width="64" Height="64" Grid.Row="1"
+               Source="{Binding ElementName=IViewWindow, Path=Item.Icon}" />
+
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Row="2"
+                   Text="{Binding ElementName=IViewWindow, Path=Item.Text}"
+                   Margin="0,0,0,10" />
+
+        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      MaxHeight="400">
+            <ItemsControl HorizontalAlignment="Center"
+                          ItemsSource="{Binding ElementName=IViewWindow, Path=DiscreteRecipes}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <ItemsControl Name="ItemRecipe" ItemsSource="{Binding}"
+                                          Margin="0,0,10,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" Rows="2" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Width="24" Height="24" Source="{Binding Path=Icon}"
+                                               Margin="0,0,3,0" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Button Content="Craft"
+                                    Command="local:Commands.CraftItem"
+                                    CommandParameter="{Binding}"
+                                    VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Button Grid.Row="4" Content="Close" IsCancel="True" />
+    </Grid>
+</Window>
