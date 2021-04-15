@@ -38,7 +38,7 @@ namespace TaintedCain
 
 			foreach (var required in recipe)
 			{
-				Pickup available = MainWindow.PickupPool.FirstOrDefault(p => p.Id == required.Id);
+				Pickup available = MainWindow.ItemManager.Pickups.FirstOrDefault(p => p.Id == required.Id);
 				available.Amount -= required.Amount;
 			}
 

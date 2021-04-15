@@ -33,8 +33,8 @@ namespace TaintedCain
 			set
 			{
 				id = value;
-				OnPropertyChanged("Id");
-				OnPropertyChanged("Name");
+				NotifyPropertyChanged("Id");
+				NotifyPropertyChanged("Name");
 			}
 		}
 		
@@ -43,8 +43,9 @@ namespace TaintedCain
 			get => amount;
 			set
 			{
+				int old_value = amount;
 				amount = value;
-				OnPropertyChanged("Amount");
+				NotifyPropertyChanged<int>("Amount", old_value, value);
 			}
 		}
 
@@ -53,10 +54,15 @@ namespace TaintedCain
 			Id = id;
 			Amount = amount;
 		}
-		
-		protected void OnPropertyChanged(string property_name)
+
+		protected void NotifyPropertyChanged(string property_name)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property_name));
+		}
+		
+		protected void NotifyPropertyChanged<T>(string property_name, T old_value, T new_value)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedExtendedEventArgs<T>(property_name, old_value, new_value));
 		}
 
 		public static bool CanCraft(ICollection<Pickup> recipe, ICollection<Pickup> available)

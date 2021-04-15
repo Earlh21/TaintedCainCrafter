@@ -40,7 +40,7 @@
             </MenuItem>
         </Menu>
         
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=MWindow, Path=PickupPool}"
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=MWindow, Path=ItemManager.Pickups}"
                       HorizontalAlignment="Center">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -57,7 +57,6 @@
                                  TextAlignment="Center" VerticalAlignment="Center"
                                  Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
                                  NotifyOnSourceUpdated=True}"
-                                 SourceUpdated="OnPickupsChanged"
                                  VerticalContentAlignment="Center"
                                  FontSize="12"/>
                     </StackPanel>
@@ -82,7 +81,7 @@
 
         <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
                       HorizontalAlignment="Center">
-            <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=Items}">
+            <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=ItemManager.Items}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
