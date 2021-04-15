@@ -9,7 +9,7 @@ namespace TaintedCain
 	{
 		private int id;
 		private string name;
-		private string text;
+		private string description;
 		private ObservableCollection<List<Pickup>> recipes;
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -36,12 +36,12 @@ namespace TaintedCain
 			}
 		}
 
-		public string Text
+		public string Description
 		{
-			get => text;
+			get => description;
 			set
 			{
-				text = value;
+				description = value;
 				OnPropertyChanged("Description");
 			}
 		}
@@ -56,11 +56,11 @@ namespace TaintedCain
 			}
 		}
 		
-		public Item(int id, string name, string text)
+		public Item(int id, string name, string description)
 		{
 			Id = id;
 			Name = name;
-			Text = text;
+			Description = description;
 			Recipes = new ObservableCollection<List<Pickup>>();
 		}
 

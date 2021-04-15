@@ -36,7 +36,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Image Width="64" Height="64" Source="{Binding Path=Icon}"
-                               ToolTip="{Binding Path=Text}">
+                               ToolTip="{Binding Path=Description}">
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick"
                                               Command="local:Commands.UnblacklistItem"

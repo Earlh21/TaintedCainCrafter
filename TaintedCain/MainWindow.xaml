@@ -68,8 +68,14 @@
                 Command="local:Commands.ClearPickups"/>
         
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
-            <TextBlock FontSize="15" Text="Search:" Margin="0,0,5,0" VerticalAlignment="Center"/>
-            <TextBox Name="SearchBox" Width="350"
+            <TextBlock FontSize="15" Text="Name:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+            <TextBox Name="NameSearchBox" Width="200"
+                     TextChanged="OnSearchChanged"
+                     VerticalAlignment="Center"
+                     Margin="0,0,50,0"/>
+            
+            <TextBlock FontSize="15" Text="Description:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+            <TextBox Name="DescriptionSearchBox" Width="200"
                      TextChanged="OnSearchChanged"
                      VerticalAlignment="Center"/>
         </StackPanel>
@@ -91,7 +97,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Image Width="64" Height="64" Source="{Binding Path=Icon}"
-                               ToolTip="{Binding Path=Text}">
+                               ToolTip="{Binding Path=Description}">
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick"
                                               Command="local:Commands.ViewItem"

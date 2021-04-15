@@ -34,7 +34,7 @@
                Source="{Binding ElementName=IViewWindow, Path=Item.Icon}" />
 
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Row="2"
-                   Text="{Binding ElementName=IViewWindow, Path=Item.Text}"
+                   Text="{Binding ElementName=IViewWindow, Path=Item.Description}"
                    Margin="0,0,0,10" />
 
         <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled"

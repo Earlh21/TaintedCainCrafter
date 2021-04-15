@@ -54,7 +54,12 @@ namespace TaintedCain
 				return false;
 			}
 			
-			if(!item.Name.ToLower().Contains(SearchBox.Text.Trim().ToLower()))
+			if(!item.Name.ToLower().Contains(NameSearchBox.Text.Trim().ToLower()))
+			{
+				return false;
+			}
+
+			if (!item.Description.ToLower().Contains(DescriptionSearchBox.Text.Trim().ToLower()))
 			{
 				return false;
 			}
@@ -89,7 +94,7 @@ namespace TaintedCain
 			Item item = (Item) e.Parameter;
 			if (BlacklistedItems.All(i => i.Id != item.Id))
 			{
-				BlacklistedItems.Add(new Item(item.Id, item.Name, item.Text));
+				BlacklistedItems.Add(new Item(item.Id, item.Name, item.Description));
 			}
 			
 			GetDefaultView(ItemManager.Items).Refresh();
