@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Linq;
@@ -62,9 +63,17 @@ namespace TaintedCain
 			{
 				PickupPool.Add(new Pickup(i));
 			}
-			
+
+			GetDefaultView(Items).Filter = SearchFilter;
 			GetDefaultView(Items).SortDescriptions.Add(new SortDescription("Id", ListSortDirection.Ascending));
 		}
+
+		private bool SearchFilter(object obj)
+		{
+			Item item = (Item) obj;
+			return item.Name.ToLower().Contains(SearchBox.Text.Trim().ToLower());
+		}
+
 
 		private void RecraftItems()
 		{
@@ -145,14 +154,14 @@ namespace TaintedCain
 			return (CollectionView) CollectionViewSource.GetDefaultView(collection);
 		}
 
-		private bool RecipeFilter(object item)
-		{
-			return ((Item) item).CanCraft(PickupPool);
-		}
-
 		public void OnPickupsChanged(object sender, DataTransferEventArgs e)
 		{
 			RecraftItems();
+		}
+
+		public void OnSearchChanged(object sender, TextChangedEventArgs e)
+		{
+			GetDefaultView(Items).Refresh();
 		}
 
 		public void ViewItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
