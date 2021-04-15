@@ -26,6 +26,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -68,14 +69,18 @@
                 Command="local:Commands.ClearPickups"/>
         
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
-            <TextBlock Text="Search:" Margin="0,0,5,0" VerticalAlignment="Center"/>
-            <TextBox Name="SearchBox" Width="250"
+            <TextBlock FontSize="15" Text="Search:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+            <TextBox Name="SearchBox" Width="350"
                      TextChanged="OnSearchChanged"
                      VerticalAlignment="Center"/>
         </StackPanel>
         
+        <TextBlock Grid.Row="4" Text="Double click to view recipes. Right click to blacklist." 
+                   HorizontalAlignment="Center"
+                   FontSize="15"
+                   Margin="0,0,0,5"/>
 
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
+        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
                       HorizontalAlignment="Center">
             <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=Items}">
                 <ItemsControl.ItemsPanel>
