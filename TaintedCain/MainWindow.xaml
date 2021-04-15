@@ -6,11 +6,14 @@
         xmlns:local="clr-namespace:TaintedCain"
         mc:Ignorable="d"
         Title="Tainted Cain Crafter" Height="450" Width="800"
-        Name="MWindow">
+        Name="MWindow"
+        Closing="MainWindow_OnClosing">
 
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.ViewItem" Executed="ViewItem_OnExecute"/>
         <CommandBinding Command="local:Commands.ClearPickups" Executed="ClearPickups_OnExecute"/>
+        <CommandBinding Command="local:Commands.BlacklistItem" Executed="BlacklistItem_OnExecute"/>
+        <CommandBinding Command="local:Commands.ViewBlacklist" Executed="ViewBlacklist_OnExecute"/>
     </Window.CommandBindings>
     
     <Grid>
@@ -19,13 +22,24 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ItemsControl Grid.Row="0" ItemsSource="{Binding ElementName=MWindow, Path=PickupPool}">
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="Close" Command="Close"/>
+            </MenuItem>
+            
+            <MenuItem Header="View">
+                <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist"/>
+            </MenuItem>
+        </Menu>
+        
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=MWindow, Path=PickupPool}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid />
@@ -47,10 +61,10 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
         
-        <Button Grid.Row="1" Content="Clear" Padding="10,5" Margin="5"  HorizontalAlignment="Center"
+        <Button Grid.Row="2" Content="Clear" Padding="10,5" Margin="5"  HorizontalAlignment="Center"
                 Command="local:Commands.ClearPickups"/>
         
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
             <TextBlock Text="Search:" Margin="0,0,5,0" VerticalAlignment="Center"/>
             <TextBox Name="SearchBox" Width="250"
                      TextChanged="OnSearchChanged"
@@ -58,7 +72,7 @@
         </StackPanel>
         
 
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
+        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
                       HorizontalAlignment="Center">
             <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=Items}">
                 <ItemsControl.ItemsPanel>
@@ -74,6 +88,10 @@
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick"
                                               Command="local:Commands.ViewItem"
+                                              CommandParameter="{Binding}"/>
+                                
+                                <MouseBinding MouseAction="RightClick"
+                                              Command="local:Commands.BlacklistItem"
                                               CommandParameter="{Binding}"/>
                             </Image.InputBindings>
                         </Image>

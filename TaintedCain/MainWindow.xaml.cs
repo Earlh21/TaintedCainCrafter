@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Newtonsoft.Json;
 
 namespace TaintedCain
 {
@@ -17,16 +19,21 @@ namespace TaintedCain
 	/// </summary>
 	public partial class MainWindow
 	{
-		private (string name, (int id, float weight)[] items)[] ItemPools { get; set; }
-		private Dictionary<int, int> ItemQualities { get; set; }
+		private (string name, (int id, float weight)[] items)[] ItemPools { get; }
+		private Dictionary<int, int> ItemQualities { get; }
 		
-		private Dictionary<int, string> ItemNames { get; set; }
-		private Dictionary<int, string> ItemDescriptions { get; set; }
+		private Dictionary<int, string> ItemNames { get; }
+		private Dictionary<int, string> ItemDescriptions { get; }
 
-		public static ObservableCollection<Pickup> PickupPool { get; set; } = new ObservableCollection<Pickup>();
-		public static ObservableCollection<Item> Items { get; set; } = new ObservableCollection<Item>();
+		#region UI Properties
+		public static ObservableCollection<Pickup> PickupPool { get; } = new ObservableCollection<Pickup>();
+		public static ObservableCollection<Item> Items { get; } = new ObservableCollection<Item>();
+		#endregion
+
+		public static ObservableCollection<Item> BlacklistedItems { get; } = new ObservableCollection<Item>();
 
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
+		private static readonly string BlacklistPath = DataFolder + "blacklist.json";
 
 		public MainWindow()
 		{
@@ -57,21 +64,42 @@ namespace TaintedCain
 					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
 						e => e.Attribute("description").Value);
 
-			InitializeComponent();
+			if (File.Exists(BlacklistPath))
+			{
+				List<int> blacklisted_ids = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText(BlacklistPath));
 
+				foreach (int id in blacklisted_ids)
+				{
+					BlacklistedItems.Add(new Item(id, ItemNames[id], ItemDescriptions[id]));
+				}
+			}
+			
 			for (int i = 1; i <= Pickup.Names.Length; i++)
 			{
 				PickupPool.Add(new Pickup(i));
 			}
 
-			GetDefaultView(Items).Filter = SearchFilter;
+			GetDefaultView(Items).Filter = ItemsFilter;
 			GetDefaultView(Items).SortDescriptions.Add(new SortDescription("Id", ListSortDirection.Ascending));
+			
+			InitializeComponent();
 		}
 
-		private bool SearchFilter(object obj)
+		private bool ItemsFilter(object obj)
 		{
 			Item item = (Item) obj;
-			return item.Name.ToLower().Contains(SearchBox.Text.Trim().ToLower());
+			
+			if (BlacklistedItems.Any(i => i.Id == item.Id))
+			{
+				return false;
+			}
+			
+			if(!item.Name.ToLower().Contains(SearchBox.Text.Trim().ToLower()))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 
@@ -181,6 +209,31 @@ namespace TaintedCain
 			
 			RecraftItems();
 		}
+
+		public void BlacklistItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			Item item = (Item) e.Parameter;
+			if (BlacklistedItems.All(i => i.Id != item.Id))
+			{
+				BlacklistedItems.Add(new Item(item.Id, item.Name, item.Text));
+			}
+			
+			GetDefaultView(Items).Refresh();
+		}
+
+		public void ViewBlacklist_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			var window = new BlacklistManagerWindow();
+			window.ShowDialog();
+			
+			GetDefaultView(Items).Refresh();
+		}
+
+		private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+		{
+			List<int> blacklisted_ids = BlacklistedItems.Select(i => i.Id).ToList();
+			File.WriteAllText(BlacklistPath, JsonConvert.SerializeObject(blacklisted_ids));
+		}
 	}
 
 	public static class Commands
@@ -188,5 +241,8 @@ namespace TaintedCain
 		public static RoutedCommand ViewItem = new RoutedCommand("View Item", typeof(Commands));
 		public static RoutedCommand CraftItem = new RoutedCommand("Craft Item", typeof(Commands));
 		public static RoutedCommand ClearPickups = new RoutedCommand("Clear Pickups", typeof(Commands));
+		public static RoutedCommand BlacklistItem = new RoutedCommand("Blacklist Item", typeof(Commands));
+		public static RoutedCommand UnblacklistItem = new RoutedCommand("Unblacklist Item", typeof(Commands));
+		public static RoutedCommand ViewBlacklist = new RoutedCommand("View Blacklist", typeof(Commands));
 	}
 }
