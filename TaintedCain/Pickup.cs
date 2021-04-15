@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Media.Imaging;
 
 namespace TaintedCain
 {
@@ -19,11 +20,12 @@ namespace TaintedCain
 		};
 
 		private int id;
+		private BitmapImage image;
 		private int amount;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
 		
-		public string Icon => AppDomain.CurrentDomain.BaseDirectory + "Pickups\\" + Name + ".png";
+		private string ImagePath => AppDomain.CurrentDomain.BaseDirectory + "Pickups\\" + Name + ".png";
 
 		public string Name => Names[id - 1];
 
@@ -33,8 +35,21 @@ namespace TaintedCain
 			set
 			{
 				id = value;
+				Image = new BitmapImage(new Uri(ImagePath));
+				
 				NotifyPropertyChanged("Id");
 				NotifyPropertyChanged("Name");
+			}
+		}
+
+		public BitmapImage Image
+		{
+			get => image;
+
+			private set
+			{
+				image = value;
+				NotifyPropertyChanged("Image");
 			}
 		}
 		

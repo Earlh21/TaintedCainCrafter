@@ -35,7 +35,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Image Width="64" Height="64" Source="{Binding Path=Icon}"
+                        <Image Width="64" Height="64" Source="{Binding Path=Image}"
                                ToolTip="{Binding Path=Description}">
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick"

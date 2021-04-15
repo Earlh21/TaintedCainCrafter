@@ -31,7 +31,7 @@
                    Margin="0,0,0,10" />
 
         <Image HorizontalAlignment="Center" Width="64" Height="64" Grid.Row="1"
-               Source="{Binding ElementName=IViewWindow, Path=Item.Icon}" />
+               Source="{Binding ElementName=IViewWindow, Path=Item.Image}" />
 
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Row="2"
                    Text="{Binding ElementName=IViewWindow, Path=Item.Description}"
@@ -61,7 +61,7 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Image Width="24" Height="24" Source="{Binding Path=Icon}"
+                                        <Image Width="24" Height="24" Source="{Binding Path=Image}"
                                                ToolTip="{Binding Path=Name}"
                                                Margin="0,0,3,0" />
                                     </DataTemplate>

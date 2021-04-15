@@ -51,7 +51,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="20">
-                        <Image Width="32" Height="32" Source="{Binding Path=Icon}" />
+                        <Image Width="32" Height="32" Source="{Binding Path=Image}" />
                         <TextBlock Width="80" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=Name}" />
                         <TextBox Width="25" Height="25"
                                  TextAlignment="Center" VerticalAlignment="Center"
@@ -96,7 +96,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Image Width="64" Height="64" Source="{Binding Path=Icon}"
+                        <Image Width="64" Height="64" Source="{Binding Path=Image}"
                                ToolTip="{Binding Path=Description}">
                             <Image.InputBindings>
                                 <MouseBinding MouseAction="LeftDoubleClick"

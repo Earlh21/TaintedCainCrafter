@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace TaintedCain
 {
@@ -9,12 +11,13 @@ namespace TaintedCain
 	{
 		private int id;
 		private string name;
+		private BitmapImage image;
 		private string description;
 		private ObservableCollection<List<Pickup>> recipes;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public string Icon => AppDomain.CurrentDomain.BaseDirectory + "Items\\collectibles_" + Id.ToString().PadLeft(3, '0') + ".png";
+		private string ImagePath => AppDomain.CurrentDomain.BaseDirectory + "Items\\collectibles_" + Id.ToString().PadLeft(3, '0') + ".png";
 
 		public int Id
 		{
@@ -22,7 +25,20 @@ namespace TaintedCain
 			set
 			{
 				id = value;
-				OnPropertyChanged("Id");
+				Image = new BitmapImage(new Uri(ImagePath));
+				
+				NotifyPropertyChanged("Id");
+			}
+		}
+		
+		public BitmapImage Image
+		{
+			get => image;
+			
+			private set
+			{
+				image = value;
+				NotifyPropertyChanged("Image");
 			}
 		}
 
@@ -32,7 +48,7 @@ namespace TaintedCain
 			set
 			{
 				name = value;
-				OnPropertyChanged("Name");
+				NotifyPropertyChanged("Name");
 			}
 		}
 
@@ -42,7 +58,7 @@ namespace TaintedCain
 			set
 			{
 				description = value;
-				OnPropertyChanged("Description");
+				NotifyPropertyChanged("Description");
 			}
 		}
 
@@ -52,7 +68,7 @@ namespace TaintedCain
 			set
 			{
 				recipes = value;
-				OnPropertyChanged("Recipes");
+				NotifyPropertyChanged("Recipes");
 			}
 		}
 		
@@ -64,7 +80,7 @@ namespace TaintedCain
 			Recipes = new ObservableCollection<List<Pickup>>();
 		}
 
-		protected void OnPropertyChanged(string property_name)
+		protected void NotifyPropertyChanged(string property_name)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property_name));
 		}
