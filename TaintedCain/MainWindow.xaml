@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaintedCain"
         mc:Ignorable="d"
-        Title="Tainted Cain Crafter" Height="450" Width="800"
+        Title="Tainted Cain Crafter" MinWidth="1000" MinHeight="600"
         Name="MWindow"
         Closing="MainWindow_OnClosing">
 
@@ -23,7 +23,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*" />
@@ -39,23 +39,26 @@
             </MenuItem>
         </Menu>
         
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=MWindow, Path=PickupPool}">
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=MWindow, Path=PickupPool}"
+                      HorizontalAlignment="Center">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid />
+                    <UniformGrid  />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" Margin="20">
                         <Image Width="32" Height="32" Source="{Binding Path=Icon}" />
-                        <TextBlock VerticalAlignment="Center" Text="{Binding Path=Name}" />
+                        <TextBlock Width="80" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=Name}" />
                         <TextBox Width="25" Height="25"
                                  TextAlignment="Center" VerticalAlignment="Center"
                                  Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
                                  NotifyOnSourceUpdated=True}"
-                                 SourceUpdated="OnPickupsChanged"/>
+                                 SourceUpdated="OnPickupsChanged"
+                                 VerticalContentAlignment="Center"
+                                 FontSize="12"/>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
