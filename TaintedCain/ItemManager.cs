@@ -72,6 +72,44 @@ namespace TaintedCain
 			Items.Clear();
 		}
 
+		public void AddPickups(List<Pickup> pickups)
+		{
+			foreach (Pickup pickup in pickups)
+			{
+				if (pickup.Amount == 0)
+				{
+					continue;
+				}
+				
+				Pickup existing = Pickups.FirstOrDefault(p => p.Id == pickup.Id);
+				if (existing == null)
+				{
+					continue;
+				}
+
+				existing.Amount += pickup.Amount;
+			}
+		}
+
+		public void RemovePickups(List<Pickup> pickups)
+		{
+			foreach (Pickup pickup in pickups)
+			{
+				if (pickup.Amount == 0)
+				{
+					continue;
+				}
+				
+				Pickup existing = Pickups.FirstOrDefault(p => p.Id == pickup.Id);
+				if (existing == null)
+				{
+					continue;
+				}
+
+				existing.Amount -= pickup.Amount;
+			}
+		}
+
 		private void PickupOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (!e.PropertyName.Equals("Amount"))

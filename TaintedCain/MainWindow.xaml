@@ -10,107 +10,171 @@
         Closing="MainWindow_OnClosing">
 
     <Window.CommandBindings>
-        <CommandBinding Command="local:Commands.ViewItem" Executed="ViewItem_OnExecute"/>
-        <CommandBinding Command="local:Commands.ClearPickups" Executed="ClearPickups_OnExecute"/>
-        <CommandBinding Command="local:Commands.BlacklistItem" Executed="BlacklistItem_OnExecute"/>
-        <CommandBinding Command="local:Commands.ViewBlacklist" Executed="ViewBlacklist_OnExecute"/>
+        <CommandBinding Command="local:Commands.ViewItem" Executed="ViewItem_OnExecute" />
+        <CommandBinding Command="local:Commands.ClearPickups" Executed="ClearPickups_OnExecute" />
+        <CommandBinding Command="local:Commands.BlacklistItem" Executed="BlacklistItem_OnExecute" />
+        <CommandBinding Command="local:Commands.ViewBlacklist" Executed="ViewBlacklist_OnExecute" />
+        <CommandBinding Command="local:Commands.ReleaseItem" Executed="ReleaseItem_OnExecute" />
+        <CommandBinding Command="local:Commands.ClearPlan" Executed="ClearPlan_OnExecute" CanExecute="ClearPlan_CanExecute"/>
     </Window.CommandBindings>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem Header="Close" Command="Close"/>
+                <MenuItem Header="Close" Command="Close" />
             </MenuItem>
-            
+
             <MenuItem Header="View">
-                <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist"/>
+                <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist" />
             </MenuItem>
         </Menu>
-        
+
         <ItemsControl Grid.Row="1" ItemsSource="{Binding ElementName=MWindow, Path=ItemManager.Pickups}"
                       HorizontalAlignment="Center">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid  />
+                    <UniformGrid />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" Margin="20">
+                    <StackPanel Orientation="Horizontal" Margin="15,10">
                         <Image Width="32" Height="32" Source="{Binding Path=Image}" />
-                        <TextBlock Width="80" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Path=Name}" />
+                        <TextBlock Width="80" TextAlignment="Center" VerticalAlignment="Center"
+                                   Text="{Binding Path=Name}" />
                         <TextBox Width="25" Height="25"
                                  TextAlignment="Center" VerticalAlignment="Center"
                                  Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
                                  NotifyOnSourceUpdated=True}"
                                  VerticalContentAlignment="Center"
-                                 FontSize="12"/>
+                                 FontSize="12" />
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        
-        <Button Grid.Row="2" Content="Clear" Padding="10,5" Margin="5"  HorizontalAlignment="Center"
-                Command="local:Commands.ClearPickups"/>
-        
+
+        <Button Grid.Row="2" Content="Clear" Padding="10,5" Margin="5" HorizontalAlignment="Center"
+                Command="local:Commands.ClearPickups" />
+
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
-            <TextBlock FontSize="15" Text="Name:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+            <TextBlock FontSize="15" Text="Name:" Margin="0,0,5,0" VerticalAlignment="Center" />
             <TextBox Name="NameSearchBox" Width="200"
                      TextChanged="OnSearchChanged"
                      VerticalAlignment="Center"
-                     Margin="0,0,50,0"/>
-            
-            <TextBlock FontSize="15" Text="Description:" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                     Margin="0,0,50,0" />
+
+            <TextBlock FontSize="15" Text="Description:" Margin="0,0,5,0" VerticalAlignment="Center" />
             <TextBox Name="DescriptionSearchBox" Width="200"
                      TextChanged="OnSearchChanged"
-                     VerticalAlignment="Center"/>
+                     VerticalAlignment="Center" />
         </StackPanel>
-        
-        <TextBlock Grid.Row="4" Text="Double click to view recipes. Right click to blacklist." 
+
+        <TextBlock Grid.Row="4" Text="Double click to view recipes. Right click to blacklist."
                    HorizontalAlignment="Center"
                    FontSize="15"
-                   Margin="0,0,0,5"/>
+                   Margin="0,0,0,5" />
 
-        <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
-                      HorizontalAlignment="Center">
-            <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=ItemManager.Items}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+        <Grid Grid.Row="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Image Width="64" Height="64" Source="{Binding Path=Image}"
-                               ToolTip="{Binding Path=Description}">
-                            <Image.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick"
-                                              Command="local:Commands.ViewItem"
-                                              CommandParameter="{Binding}"/>
-                                
-                                <MouseBinding MouseAction="RightClick"
-                                              Command="local:Commands.BlacklistItem"
-                                              CommandParameter="{Binding}"/>
-                            </Image.InputBindings>
-                        </Image>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=ItemManager.Items}"
+                              HorizontalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Image Width="64" Height="64" Source="{Binding Path=Image}"
+                                   ToolTip="{Binding Path=Description}"
+                                   HorizontalAlignment="Center">
+                                <Image.InputBindings>
+                                    <MouseBinding MouseAction="LeftDoubleClick"
+                                                  Command="local:Commands.ViewItem"
+                                                  CommandParameter="{Binding}" />
+
+                                    <MouseBinding MouseAction="RightClick"
+                                                  Command="local:Commands.BlacklistItem"
+                                                  CommandParameter="{Binding}" />
+                                </Image.InputBindings>
+                            </Image>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled"
+                          HorizontalScrollBarVisibility="Auto">
+                <GroupBox Height="160" Header="Planned">
+                    <ScrollViewer VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Orientation="Horizontal">
+                            <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=PlannedRecipes}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" Margin="6,0">
+                                            <Image
+                                                HorizontalAlignment="Center"
+                                                Width="64" Height="64"
+                                                Source="{Binding Path=Item1.Image}"
+                                                ToolTip="{Binding Path=Item1.Description}" />
+
+                                            <ItemsControl Name="ItemRecipe" ItemsSource="{Binding Path=Item2}"
+                                                          HorizontalAlignment="Center">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <UniformGrid Columns="4" Rows="2" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Image Width="20" Height="20" Source="{Binding Path=Image}"
+                                                               ToolTip="{Binding Path=Name}"
+                                                               Margin="0,0,3,0" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                            <Button Content="Cancel" HorizontalAlignment="Stretch" Margin="0,5,0,0"
+                                                    Command="local:Commands.ReleaseItem"
+                                                    CommandParameter="{Binding}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Button Content="Craft All" VerticalAlignment="Center"
+                                    Command="local:Commands.ClearPlan"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </GroupBox>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

@@ -20,6 +20,9 @@ namespace TaintedCain
 	public partial class MainWindow
 	{
 		public static ItemManager ItemManager { get; } = new ItemManager();
+
+		public static ObservableCollection<Tuple<Item, List<Pickup>>> PlannedRecipes { get; set; } =
+			new ObservableCollection<Tuple<Item, List<Pickup>>>();
 		public static ObservableCollection<Item> BlacklistedItems { get; } = new ObservableCollection<Item>();
 
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
@@ -82,6 +85,11 @@ namespace TaintedCain
 			Item item = (Item) e.Parameter;
 			var window = new ItemViewWindow(item);
 			window.ShowDialog();
+
+			if (window.Result != null)
+			{
+				PlannedRecipes.Add(window.Result);
+			}
 		}
 
 		public void ClearPickups_OnExecute(object sender, ExecutedRoutedEventArgs e)
@@ -108,6 +116,40 @@ namespace TaintedCain
 			GetDefaultView(ItemManager.Items).Refresh();
 		}
 
+		public void ReleaseItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			var planned = (Tuple<Item, List<Pickup>>) e.Parameter;
+			List<Pickup> condensed_recipe = new List<Pickup>();
+
+			//This recipe is discretized, so condense it to reduce crafting recalculation
+			foreach (Pickup pickup in planned.Item2)
+			{
+				Pickup existing = condensed_recipe.FirstOrDefault(p => p.Id == pickup.Id);
+				
+				if (existing == null)
+				{
+					condensed_recipe.Add(new Pickup(pickup.Id, pickup.Amount));
+				}
+				else
+				{
+					existing.Amount += pickup.Amount;
+				}
+			}
+			
+			ItemManager.AddPickups(condensed_recipe);
+			PlannedRecipes.Remove(planned);
+		}
+
+		public void ClearPlan_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			PlannedRecipes.Clear();
+		}
+
+		public void ClearPlan_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = PlannedRecipes.Count > 0;
+		}
+
 		private void MainWindow_OnClosing(object sender, CancelEventArgs e)
 		{
 			List<int> blacklisted_ids = BlacklistedItems.Select(i => i.Id).ToList();
@@ -123,5 +165,8 @@ namespace TaintedCain
 		public static RoutedCommand BlacklistItem = new RoutedCommand("Blacklist Item", typeof(Commands));
 		public static RoutedCommand UnblacklistItem = new RoutedCommand("Unblacklist Item", typeof(Commands));
 		public static RoutedCommand ViewBlacklist = new RoutedCommand("View Blacklist", typeof(Commands));
+		public static RoutedCommand PlanItem = new RoutedCommand("Plan Item", typeof(Commands));
+		public static RoutedCommand ReleaseItem = new RoutedCommand("Release Item", typeof(Commands));
+		public static RoutedCommand ClearPlan = new RoutedCommand("Clear Plan", typeof(Commands));
 	}
 }

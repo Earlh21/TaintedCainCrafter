@@ -5,12 +5,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TaintedCain"
         mc:Ignorable="d"
-        Title="{Binding ElementName=IViewWindow, Path=Item.Name}" Width="200" SizeToContent="Height"
+        Title="{Binding ElementName=IViewWindow, Path=Item.Name}" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Name="IViewWindow">
 
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.CraftItem" Executed="CraftItem_OnExecute" />
+        <CommandBinding Command="local:Commands.PlanItem" Executed="PlanItem_OnExecute"/>
     </Window.CommandBindings>
 
     <Grid Margin="5">
@@ -69,9 +70,17 @@
                             </ItemsControl>
 
                             <Button Content="Craft"
+                                    Padding="6,3"
                                     Command="local:Commands.CraftItem"
                                     CommandParameter="{Binding}"
-                                    VerticalAlignment="Center" />
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+                            
+                            <Button Content="Plan"
+                                    Padding="6, 3"
+                                    Command="local:Commands.PlanItem"
+                                    CommandParameter="{Binding}"
+                                    VerticalAlignment="Center"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

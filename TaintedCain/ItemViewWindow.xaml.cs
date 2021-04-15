@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ namespace TaintedCain
 	{
 		public Item Item { get; set; }
 		public List<List<Pickup>> DiscreteRecipes { get; set; } = new List<List<Pickup>>();
+		public Tuple<Item, List<Pickup>> Result { get; private set; }
 		
 		public ItemViewWindow(Item item)
 		{
@@ -36,12 +38,18 @@ namespace TaintedCain
 		{
 			List<Pickup> recipe = (List<Pickup>)e.Parameter;
 
-			foreach (var required in recipe)
-			{
-				Pickup available = MainWindow.ItemManager.Pickups.FirstOrDefault(p => p.Id == required.Id);
-				available.Amount -= required.Amount;
-			}
+			MainWindow.ItemManager.RemovePickups(recipe);
 
+			Close();
+		}
+
+		public void PlanItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			List<Pickup> recipe = (List<Pickup>)e.Parameter;
+			
+			MainWindow.ItemManager.RemovePickups(recipe);
+
+			Result = new Tuple<Item, List<Pickup>>(Item, recipe);
 			Close();
 		}
 	}
