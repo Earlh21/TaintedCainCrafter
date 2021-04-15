@@ -1,3 +1,3 @@
 # TaintedCainCrafter
 
-![Image](https://i.postimg.cc/RFQyLnBt/Preview.png)
+![Image](https://i.postimg.cc/cC3fJN0h/Preview.png)
