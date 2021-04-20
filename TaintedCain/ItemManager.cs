@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -22,13 +23,15 @@ namespace TaintedCain
 
 		static ItemManager()
 		{
+			var culture_format = new CultureInfo("en-US");
+		
 			ItemPools =
 				XElement.Load(DataFolder + "itempools.xml")
 					.XPathSelectElements("Pool")
 					.Select(e => (
 						e.Attribute("Name").Value,
 						e.Elements("Item").Select(x => (Convert.ToInt32(x.Attribute("Id").Value),
-							Convert.ToSingle(x.Attribute("Weight").Value))).ToArray()))
+							Convert.ToSingle(x.Attribute("Weight").Value, culture_format))).ToArray()))
 					.ToArray();
 
 			ItemQualities =
