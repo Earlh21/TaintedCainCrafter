@@ -60,7 +60,7 @@ namespace TaintedCain
 			{
 				int old_value = amount;
 				amount = value;
-				NotifyPropertyChanged<int>("Amount", old_value, value);
+				NotifyPropertyChanged("Amount", old_value, value);
 			}
 		}
 

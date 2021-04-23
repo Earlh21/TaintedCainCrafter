@@ -138,6 +138,7 @@ namespace TaintedCain
 			void AddRecipesHelper(List<Pickup> current_recipe, int pickup_index, int prev_length)
 			{
 				Pickup current_pickup = current_recipe[pickup_index];
+
 				current_pickup.Amount = Math.Min(8 - prev_length, Pickups[pickup_index].Amount);
 
 				if (prev_length + current_pickup.Amount == 8)
@@ -149,6 +150,7 @@ namespace TaintedCain
 
 				if (pickup_index == current_recipe.Count - 1)
 				{
+					current_pickup.Amount = 0;
 					return;
 				}
 
