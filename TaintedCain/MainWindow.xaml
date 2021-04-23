@@ -15,7 +15,10 @@
         <CommandBinding Command="local:Commands.BlacklistItem" Executed="BlacklistItem_OnExecute" />
         <CommandBinding Command="local:Commands.ViewBlacklist" Executed="ViewBlacklist_OnExecute" />
         <CommandBinding Command="local:Commands.ReleaseItem" Executed="ReleaseItem_OnExecute" />
-        <CommandBinding Command="local:Commands.ClearPlan" Executed="ClearPlan_OnExecute" CanExecute="ClearPlan_CanExecute"/>
+        <CommandBinding Command="local:Commands.ClearPlan" Executed="ClearPlan_OnExecute"
+                        CanExecute="ClearPlan_CanExecute" />
+        <CommandBinding Command="local:Commands.IncrementPickup" Executed="IncrementPickup_OnExecute" />
+        <CommandBinding Command="local:Commands.DecrementPickup" Executed="DecrementPickup_OnExecute" />
     </Window.CommandBindings>
 
     <Grid>
@@ -53,15 +56,42 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="15,10">
-                        <Image Width="32" Height="32" Source="{Binding Path=Image}" />
+                        <Button BorderThickness="0" Background="Transparent"
+                                Width="32" Height="32"
+                                Command="local:Commands.IncrementPickup" CommandParameter="{Binding}">
+                            <Image Source="{Binding Path=Image}" />
+                            
+                            <Button.InputBindings>
+                                <MouseBinding Gesture="RightClick"
+                                              Command="local:Commands.DecrementPickup" CommandParameter="{Binding}"/>
+                            </Button.InputBindings>
+                        </Button>
+
                         <TextBlock Width="80" TextAlignment="Center" VerticalAlignment="Center"
                                    Text="{Binding Path=Name}" />
-                        <TextBox Width="25" Height="25"
-                                 TextAlignment="Center" VerticalAlignment="Center"
-                                 Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
+
+                        <Grid Height="25" Width="38">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Width="25"
+                                     TextAlignment="Center" VerticalContentAlignment="Center" FontSize="12" 
+                                     Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
                                  NotifyOnSourceUpdated=True}"
-                                 VerticalContentAlignment="Center"
-                                 FontSize="12" />
+                                     GotFocus="ValueText_GotFocus"/>
+
+                            <Button Grid.Row="0" Grid.Column="1" FontSize="6" Content="▲"
+                                    Command="local:Commands.IncrementPickup" CommandParameter="{Binding}" />
+                            <Button Grid.Row="1" Grid.Column="1" FontSize="6" Content="▼"
+                                    Command="local:Commands.DecrementPickup" CommandParameter="{Binding}" />
+                        </Grid>
+
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -170,7 +200,7 @@
                             </ItemsControl>
 
                             <Button Content="Craft All" VerticalAlignment="Center"
-                                    Command="local:Commands.ClearPlan"/>
+                                    Command="local:Commands.ClearPlan" />
                         </StackPanel>
                     </ScrollViewer>
                 </GroupBox>

@@ -155,6 +155,29 @@ namespace TaintedCain
 			List<int> blacklisted_ids = BlacklistedItems.Select(i => i.Id).ToList();
 			File.WriteAllText(BlacklistPath, JsonConvert.SerializeObject(blacklisted_ids));
 		}
+		
+		//Select all text when a pickup textbox is clicked
+		private void ValueText_GotFocus(object sender, RoutedEventArgs e)
+		{
+			TextBox tb = (TextBox)e.OriginalSource;
+			tb.Dispatcher.BeginInvoke(
+				new Action(delegate
+				{
+					tb.SelectAll();
+				}), System.Windows.Threading.DispatcherPriority.Input);
+		}
+
+		public void IncrementPickup_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			Pickup pickup = (Pickup) e.Parameter;
+			pickup.Amount++;
+		}
+
+		public void DecrementPickup_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			Pickup pickup = (Pickup) e.Parameter;
+			pickup.Amount--;
+		}
 	}
 
 	public static class Commands
@@ -168,5 +191,7 @@ namespace TaintedCain
 		public static RoutedCommand PlanItem = new RoutedCommand("Plan Item", typeof(Commands));
 		public static RoutedCommand ReleaseItem = new RoutedCommand("Release Item", typeof(Commands));
 		public static RoutedCommand ClearPlan = new RoutedCommand("Clear Plan", typeof(Commands));
+		public static RoutedCommand IncrementPickup = new RoutedCommand("Increment Pickup", typeof(Commands));
+		public static RoutedCommand DecrementPickup = new RoutedCommand("Decrement Pickup", typeof(Commands));
 	}
 }
