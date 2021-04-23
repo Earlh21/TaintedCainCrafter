@@ -138,23 +138,26 @@ namespace TaintedCain
 			void AddRecipesHelper(List<Pickup> current_recipe, int pickup_index, int prev_length)
 			{
 				Pickup current_pickup = current_recipe[pickup_index];
-
+				
 				current_pickup.Amount = Math.Min(8 - prev_length, Pickups[pickup_index].Amount);
 
-				if (prev_length + current_pickup.Amount == 8)
+				//Don't add duplicate recipes - only add recipes that include the changed pickup
+				if (current_recipe[changed_id - 1].Amount > 0 && prev_length + current_pickup.Amount == 8)
 				{
 					AddCraft(current_recipe);
 
 					current_pickup.Amount -= 1;
 				}
 
+				//Base case. Don't continue after the last pickup.
 				if (pickup_index == current_recipe.Count - 1)
 				{
 					current_pickup.Amount = 0;
 					return;
 				}
-
-				int minimum = pickup_index + 1 == changed_id ? old_amount + 1 : 0;
+				
+				//Only consider recipes that include more than the old amount of the changed pickup
+				int minimum = changed_id == pickup_index + 1 ? old_amount + 1 : 0;
 				
 				while (current_pickup.Amount >= minimum)
 				{
