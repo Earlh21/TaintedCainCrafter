@@ -221,6 +221,12 @@ namespace TaintedCain
 
 			e.Accepted = true;
 		}
+
+		public void ViewAbout_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			var about_window = new AboutWindow();
+			about_window.ShowDialog();
+		}
 	}
 
 	public static class Commands
@@ -239,5 +245,6 @@ namespace TaintedCain
 		public static RoutedCommand SetItemHighlight = new RoutedCommand("Set Item Highlight", typeof(Commands));
 		public static RoutedCommand SetHighlighter = new RoutedCommand("Set Highlighter", typeof(Commands));
 		public static RoutedCommand ViewHighlighter = new RoutedCommand("View Highlighter", typeof(Commands));
+		public static RoutedCommand ViewAbout = new RoutedCommand("View About", typeof(Commands));
 	}
 }

@@ -22,6 +22,7 @@
         <CommandBinding Command="local:Commands.IncrementPickup" Executed="IncrementPickup_OnExecute" />
         <CommandBinding Command="local:Commands.DecrementPickup" Executed="DecrementPickup_OnExecute" />
         <CommandBinding Command="local:Commands.ViewHighlighter" Executed="ViewHighlighter_OnExecute" />
+        <CommandBinding Command="local:Commands.ViewAbout" Executed="ViewAbout_OnExecute"/>
     </Window.CommandBindings>
 
     <Window.Resources>
@@ -61,6 +62,10 @@
             <MenuItem Header="View">
                 <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist" />
                 <MenuItem Header="Highlighter" Command="local:Commands.ViewHighlighter" />
+            </MenuItem>
+            
+            <MenuItem Header="Help">
+                <MenuItem Header="About" Command="local:Commands.ViewAbout"/>
             </MenuItem>
         </Menu>
 

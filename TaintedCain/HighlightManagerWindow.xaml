@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TaintedCain"
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
-        Title="HighlightManagerWindow" Height="450" Width="800"
+        Title="Highlighter" MinHeight="450" MinWidth="800"
         Name="HWindow">
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.SetHighlighter" Executed="SetHighlighter_OnExecute" />
@@ -23,7 +23,7 @@
         </CollectionViewSource>
     </Window.Resources>
 
-    <Grid>
+    <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
