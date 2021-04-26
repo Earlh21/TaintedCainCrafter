@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaintedCain"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="Tainted Cain Crafter" MinWidth="1000" MinHeight="600"
         Name="MWindow"
@@ -19,7 +21,23 @@
                         CanExecute="ClearPlan_CanExecute" />
         <CommandBinding Command="local:Commands.IncrementPickup" Executed="IncrementPickup_OnExecute" />
         <CommandBinding Command="local:Commands.DecrementPickup" Executed="DecrementPickup_OnExecute" />
+        <CommandBinding Command="local:Commands.ViewHighlighter" Executed="ViewHighlighter_OnExecute" />
     </Window.CommandBindings>
+
+    <Window.Resources>
+        <CollectionViewSource Source="{Binding ElementName=MWindow, Path=ItemManager.Items}"
+                              x:Key="ItemsView"
+                              Filter="ItemFilter"
+                              IsLiveFilteringRequested="True">
+            <CollectionViewSource.LiveFilteringProperties>
+                <system:String>IsBlacklisted</system:String>
+                <system:String>HasRecipes</system:String>
+            </CollectionViewSource.LiveFilteringProperties>
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="Id" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -42,6 +60,7 @@
 
             <MenuItem Header="View">
                 <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist" />
+                <MenuItem Header="Highlighter" Command="local:Commands.ViewHighlighter" />
             </MenuItem>
         </Menu>
 
@@ -60,10 +79,10 @@
                                 Width="32" Height="32"
                                 Command="local:Commands.IncrementPickup" CommandParameter="{Binding}">
                             <Image Source="{Binding Path=Image}" />
-                            
+
                             <Button.InputBindings>
                                 <MouseBinding Gesture="RightClick"
-                                              Command="local:Commands.DecrementPickup" CommandParameter="{Binding}"/>
+                                              Command="local:Commands.DecrementPickup" CommandParameter="{Binding}" />
                             </Button.InputBindings>
                         </Button>
 
@@ -81,10 +100,10 @@
                             </Grid.RowDefinitions>
 
                             <TextBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Width="25"
-                                     TextAlignment="Center" VerticalContentAlignment="Center" FontSize="12" 
+                                     TextAlignment="Center" VerticalContentAlignment="Center" FontSize="12"
                                      Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
                                  NotifyOnSourceUpdated=True}"
-                                     GotFocus="ValueText_GotFocus"/>
+                                     GotFocus="ValueText_GotFocus" />
 
                             <Button Grid.Row="0" Grid.Column="1" FontSize="6" Content="▲"
                                     Command="local:Commands.IncrementPickup" CommandParameter="{Binding}" />
@@ -102,15 +121,15 @@
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
             <TextBlock FontSize="15" Text="Name:" Margin="0,0,5,0" VerticalAlignment="Center" />
-            <TextBox Name="NameSearchBox" Width="200"
-                     TextChanged="OnSearchChanged"
-                     VerticalAlignment="Center"
-                     Margin="0,0,50,0" />
+            <TextBox Width="200" Margin="0,0,50,0" 
+                     Text="{Binding Mode=TwoWay, ElementName=MWindow, Path=FilterName, 
+                        UpdateSourceTrigger=PropertyChanged}"
+                     VerticalAlignment="Center"/>
 
             <TextBlock FontSize="15" Text="Description:" Margin="0,0,5,0" VerticalAlignment="Center" />
-            <TextBox Name="DescriptionSearchBox" Width="200"
-                     TextChanged="OnSearchChanged"
-                     VerticalAlignment="Center" />
+            <TextBox Width="200" VerticalAlignment="Center" 
+                     Text="{Binding Mode=TwoWay, ElementName=MWindow, Path=FilterDescription,
+                        UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
         <TextBlock Grid.Row="4" Text="Double click to view recipes. Right click to blacklist."
@@ -125,8 +144,9 @@
             </Grid.RowDefinitions>
 
             <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding ElementName=MWindow, Path=ItemManager.Items}"
+                <ItemsControl ItemsSource="{Binding Source={StaticResource ItemsView}}"
                               HorizontalAlignment="Center">
+
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -135,19 +155,25 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Image Width="64" Height="64" Source="{Binding Path=Image}"
-                                   ToolTip="{Binding Path=Description}"
-                                   HorizontalAlignment="Center">
-                                <Image.InputBindings>
-                                    <MouseBinding MouseAction="LeftDoubleClick"
-                                                  Command="local:Commands.ViewItem"
-                                                  CommandParameter="{Binding}" />
+                            <Border>
+                                <Image Width="64" Height="64" Source="{Binding Path=Image}"
+                                       ToolTip="{Binding Path=Description}"
+                                       HorizontalAlignment="Center">
+                                    <Image.InputBindings>
+                                        <MouseBinding MouseAction="LeftDoubleClick"
+                                                      Command="local:Commands.ViewItem"
+                                                      CommandParameter="{Binding}" />
 
-                                    <MouseBinding MouseAction="RightClick"
-                                                  Command="local:Commands.BlacklistItem"
-                                                  CommandParameter="{Binding}" />
-                                </Image.InputBindings>
-                            </Image>
+                                        <MouseBinding MouseAction="RightClick"
+                                                      Command="local:Commands.BlacklistItem"
+                                                      CommandParameter="{Binding}" />
+                                    </Image.InputBindings>
+                                </Image>
+
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding HighlightColor}" />
+                                </Border.Background>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

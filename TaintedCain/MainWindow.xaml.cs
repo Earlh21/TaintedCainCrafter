@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Media;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using Newtonsoft.Json;
 
 namespace TaintedCain
@@ -19,65 +18,74 @@ namespace TaintedCain
 	/// </summary>
 	public partial class MainWindow
 	{
+		private string filter_name = "";
+		private string filter_description = "";
+		
 		public static ItemManager ItemManager { get; } = new ItemManager();
 
 		public static ObservableCollection<Tuple<Item, List<Pickup>>> PlannedRecipes { get; set; } =
 			new ObservableCollection<Tuple<Item, List<Pickup>>>();
-		public static ObservableCollection<Item> BlacklistedItems { get; } = new ObservableCollection<Item>();
 
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
 		private static readonly string BlacklistPath = DataFolder + "blacklist.json";
+		private static readonly string HighlightsPath = DataFolder + "highlight.json";
+
+		public string FilterName
+		{
+			get => filter_name;
+			set
+			{
+				filter_name = value;
+				((CollectionViewSource)Resources["ItemsView"]).View.Refresh();
+			}
+		}
+		
+		public string FilterDescription
+		{
+			get => filter_description;
+			set
+			{
+				filter_description = value;
+				((CollectionViewSource)Resources["ItemsView"]).View.Refresh();
+			}
+		}
 
 		public MainWindow()
 		{
-
-
 			if (File.Exists(BlacklistPath))
 			{
-				List<int> blacklisted_ids = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText(BlacklistPath));
+				List<int> blacklisted_ids = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText(BlacklistPath))
+					?? new List<int>();
 
 				foreach (int id in blacklisted_ids)
 				{
-					BlacklistedItems.Add(new Item(id, ItemManager.ItemNames[id], ItemManager.ItemDescriptions[id]));
+					Item item = ItemManager.Items.FirstOrDefault(item => item.Id == id);
+
+					if (item != null)
+					{
+						item.IsBlacklisted = true;
+					}
 				}
 			}
 
-			GetDefaultView(ItemManager.Items).Filter = ItemsFilter;
-			GetDefaultView(ItemManager.Items).SortDescriptions.Add(new SortDescription("Id", ListSortDirection.Ascending));
-			
+			if (File.Exists(HighlightsPath))
+			{
+				var item_highlights =
+					JsonConvert.DeserializeObject<Dictionary<int, Color>>(File.ReadAllText(HighlightsPath)) 
+					?? new Dictionary<int, Color>();
+
+				foreach (Item item in ItemManager.Items)
+				{
+					item.HighlightColor = item_highlights.GetValueOrDefault(item.Id);
+				}
+			}
+
 			InitializeComponent();
 		}
 
-		private bool ItemsFilter(object obj)
-		{
-			Item item = (Item) obj;
-			
-			if (BlacklistedItems.Any(i => i.Id == item.Id))
-			{
-				return false;
-			}
-			
-			if(!item.Name.ToLower().Contains(NameSearchBox.Text.Trim().ToLower()))
-			{
-				return false;
-			}
-
-			if (!item.Description.ToLower().Contains(DescriptionSearchBox.Text.Trim().ToLower()))
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		private CollectionView GetDefaultView(object collection)
+		private static CollectionView GetDefaultView(object collection)
 		{
 			return (CollectionView) CollectionViewSource.GetDefaultView(collection);
-		}
-
-		public void OnSearchChanged(object sender, TextChangedEventArgs e)
-		{
-			GetDefaultView(ItemManager.Items).Refresh();
 		}
 
 		public void ViewItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
@@ -100,20 +108,13 @@ namespace TaintedCain
 		public void BlacklistItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
 			Item item = (Item) e.Parameter;
-			if (BlacklistedItems.All(i => i.Id != item.Id))
-			{
-				BlacklistedItems.Add(new Item(item.Id, item.Name, item.Description));
-			}
-			
-			GetDefaultView(ItemManager.Items).Refresh();
+			item.IsBlacklisted = true;
 		}
 
 		public void ViewBlacklist_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
 			var window = new BlacklistManagerWindow();
 			window.ShowDialog();
-			
-			GetDefaultView(ItemManager.Items).Refresh();
 		}
 
 		public void ReleaseItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
@@ -125,7 +126,7 @@ namespace TaintedCain
 			foreach (Pickup pickup in planned.Item2)
 			{
 				Pickup existing = condensed_recipe.FirstOrDefault(p => p.Id == pickup.Id);
-				
+
 				if (existing == null)
 				{
 					condensed_recipe.Add(new Pickup(pickup.Id, pickup.Amount));
@@ -135,7 +136,7 @@ namespace TaintedCain
 					existing.Amount += pickup.Amount;
 				}
 			}
-			
+
 			ItemManager.AddPickups(condensed_recipe);
 			PlannedRecipes.Remove(planned);
 		}
@@ -152,19 +153,24 @@ namespace TaintedCain
 
 		private void MainWindow_OnClosing(object sender, CancelEventArgs e)
 		{
-			List<int> blacklisted_ids = BlacklistedItems.Select(i => i.Id).ToList();
+			var blacklisted_ids = ItemManager.Items
+				.Where(item => item.IsBlacklisted)
+				.Select(item => item.Id).ToList();
+			
 			File.WriteAllText(BlacklistPath, JsonConvert.SerializeObject(blacklisted_ids));
+
+			var highlights = ItemManager.Items
+				.ToDictionary(item => item.Id, item => item.HighlightColor);
+			
+			File.WriteAllText(HighlightsPath, JsonConvert.SerializeObject(highlights));
 		}
-		
+
 		//Select all text when a pickup textbox is clicked
 		private void ValueText_GotFocus(object sender, RoutedEventArgs e)
 		{
-			TextBox tb = (TextBox)e.OriginalSource;
+			TextBox tb = (TextBox) e.OriginalSource;
 			tb.Dispatcher.BeginInvoke(
-				new Action(delegate
-				{
-					tb.SelectAll();
-				}), System.Windows.Threading.DispatcherPriority.Input);
+				new Action(delegate { tb.SelectAll(); }), System.Windows.Threading.DispatcherPriority.Input);
 		}
 
 		public void IncrementPickup_OnExecute(object sender, ExecutedRoutedEventArgs e)
@@ -177,6 +183,43 @@ namespace TaintedCain
 		{
 			Pickup pickup = (Pickup) e.Parameter;
 			pickup.Amount--;
+		}
+
+		public void ViewHighlighter_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			var window = new HighlightManagerWindow();
+			window.ShowDialog();
+		}
+
+		private void ItemFilter(object sender, FilterEventArgs e)
+		{
+			Item item = (Item) e.Item;
+
+			if (!item.HasRecipes)
+			{
+				e.Accepted = false;
+				return;
+			}
+
+			if (item.IsBlacklisted)
+			{
+				e.Accepted = false;
+				return;
+			}
+
+			if (!item.Name.ToLower().Contains(FilterName.Trim().ToLower()))
+			{
+				e.Accepted = false;
+				return;
+			}
+
+			if (!item.Description.ToLower().Contains(FilterDescription.Trim().ToLower()))
+			{
+				e.Accepted = false;
+				return;
+			}
+
+			e.Accepted = true;
 		}
 	}
 
@@ -193,5 +236,8 @@ namespace TaintedCain
 		public static RoutedCommand ClearPlan = new RoutedCommand("Clear Plan", typeof(Commands));
 		public static RoutedCommand IncrementPickup = new RoutedCommand("Increment Pickup", typeof(Commands));
 		public static RoutedCommand DecrementPickup = new RoutedCommand("Decrement Pickup", typeof(Commands));
+		public static RoutedCommand SetItemHighlight = new RoutedCommand("Set Item Highlight", typeof(Commands));
+		public static RoutedCommand SetHighlighter = new RoutedCommand("Set Highlighter", typeof(Commands));
+		public static RoutedCommand ViewHighlighter = new RoutedCommand("View Highlighter", typeof(Commands));
 	}
 }

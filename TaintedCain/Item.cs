@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -12,8 +13,10 @@ namespace TaintedCain
 		private int id;
 		private string name;
 		private BitmapImage image;
+		private bool is_blacklisted;
 		private string description;
 		private ObservableCollection<List<Pickup>> recipes;
+		private Color highlight_color;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -62,6 +65,28 @@ namespace TaintedCain
 			}
 		}
 
+		public Color HighlightColor
+		{
+			get => highlight_color;
+			set
+			{
+				highlight_color = value;
+				NotifyPropertyChanged("HighlightColor");
+			}
+		}
+
+		public bool IsBlacklisted
+		{
+			get => is_blacklisted;
+			set
+			{
+				is_blacklisted = value;
+				NotifyPropertyChanged("IsBlacklisted");
+			}
+		}
+
+		public bool HasRecipes => Recipes.Count > 0;
+
 		public ObservableCollection<List<Pickup>> Recipes
 		{
 			get => recipes;
@@ -78,6 +103,9 @@ namespace TaintedCain
 			Name = name;
 			Description = description;
 			Recipes = new ObservableCollection<List<Pickup>>();
+			HighlightColor = Color.FromArgb(0, 0, 0, 0);
+			
+			Recipes.CollectionChanged += (sender, args) => { NotifyPropertyChanged("HasRecipes");};
 		}
 
 		protected void NotifyPropertyChanged(string property_name)

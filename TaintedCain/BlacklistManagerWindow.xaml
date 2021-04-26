@@ -4,6 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TaintedCain"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Name="BMWindow"
         Title="BlacklistManagerWindow" MinHeight="450" MinWidth="800">
@@ -11,6 +13,20 @@
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.UnblacklistItem" Executed="UnblacklistItem_OnExecute"/>
     </Window.CommandBindings>
+    
+    <Window.Resources>
+        <CollectionViewSource Source="{Binding ElementName=BMWindow, Path=Items}"
+                              IsLiveFilteringRequested="True"
+                              Filter="ItemsFilter"
+                              x:Key="ItemsView">
+            <CollectionViewSource.LiveFilteringProperties>
+                <system:String>IsBlacklisted</system:String>
+            </CollectionViewSource.LiveFilteringProperties>
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="Id"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
 
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
@@ -26,7 +42,7 @@
         <ScrollViewer Grid.Row="0"
                       VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled"
                       HorizontalAlignment="Center">
-            <ItemsControl ItemsSource="{Binding ElementName=BMWindow, Path=BlacklistedItems}">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource ItemsView}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Data;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
@@ -61,6 +62,14 @@ namespace TaintedCain
 				pickup.PropertyChanged += PickupOnPropertyChanged;
 				Pickups.Add(pickup);
 			}
+
+			foreach (var item_entry in ItemNames)
+			{
+				int id = item_entry.Key;
+				string name = item_entry.Value;
+				string description = ItemDescriptions[id];
+				Items.Add(new Item(id, name, description));
+			}
 		}
 
 		public void Clear()
@@ -72,7 +81,10 @@ namespace TaintedCain
 				pickup.PropertyChanged += PickupOnPropertyChanged;
 			}
 
-			Items.Clear();
+			foreach (Item item in Items)
+			{
+				item.Recipes.Clear();
+			}
 		}
 
 		public void AddPickups(List<Pickup> pickups)
@@ -198,18 +210,7 @@ namespace TaintedCain
 			int item_id = Crafting.CalculateCrafting(crafting_array.ToArray(), ItemPools, ItemQualities);
 
 			Item existing_item = Items.FirstOrDefault(i => i.Id == item_id);
-			if (existing_item == null)
-			{
-				Item item = new Item(item_id, 
-					ItemNames.GetValueOrDefault(item_id), 
-					ItemDescriptions.GetValueOrDefault(item_id));
-				item.Recipes.Add(recipe_copy);
-				Items.Add(item);
-			}
-			else
-			{
-				existing_item.Recipes.Add(recipe_copy);
-			}
+			existing_item?.Recipes.Add(recipe_copy);
 		}
 
 		private void RemoveRecipes(Pickup changed_pickup)
@@ -219,12 +220,6 @@ namespace TaintedCain
 				Item item = Items[i];
 
 				RemoveItemRecipes(item, changed_pickup);
-
-				if (item.Recipes.Count == 0)
-				{
-					Items.RemoveAt(i);
-					i--;
-				}
 			}
 		}
 			
