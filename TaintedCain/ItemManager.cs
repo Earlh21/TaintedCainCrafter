@@ -25,21 +25,6 @@ namespace TaintedCain
 		static ItemManager()
 		{
 			var culture_format = new CultureInfo("en-US");
-		
-			ItemPools =
-				XElement.Load(DataFolder + "itempools.xml")
-					.XPathSelectElements("Pool")
-					.Select(e => (
-						e.Attribute("Name").Value,
-						e.Elements("Item").Select(x => (Convert.ToInt32(x.Attribute("Id").Value),
-							Convert.ToSingle(x.Attribute("Weight").Value, culture_format))).ToArray()))
-					.ToArray();
-
-			ItemQualities =
-				XElement.Load(DataFolder + "items_metadata.xml")
-					.XPathSelectElements("item")
-					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
-						e => Convert.ToInt32(e.Attribute("quality").Value));
 
 			ItemNames =
 				XElement.Load(DataFolder + "items.xml")
@@ -193,7 +178,7 @@ namespace TaintedCain
 		private void AddCraft(List<Pickup> recipe)
 		{
 			List<Pickup> recipe_copy = new List<Pickup>();
-			List<int> crafting_array = new List<int>();
+			List<uint> crafting_array = new List<uint>();
 
 			foreach (Pickup p in recipe)
 			{
@@ -203,11 +188,11 @@ namespace TaintedCain
 
 				for (int i = 0; i < p.Amount; i++)
 				{
-					crafting_array.Add(p.Id);
+					crafting_array.Add((uint)p.Id);
 				}
 			}
 
-			int item_id = Crafting.CalculateCrafting(crafting_array.ToArray(), ItemPools, ItemQualities);
+			int item_id = Crafting.Craft(crafting_array.ToArray());
 
 			Item existing_item = Items.FirstOrDefault(i => i.Id == item_id);
 			existing_item?.Recipes.Add(recipe_copy);
