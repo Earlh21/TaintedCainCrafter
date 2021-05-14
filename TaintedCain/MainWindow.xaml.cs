@@ -30,6 +30,9 @@ namespace TaintedCain
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
 		private static readonly string BlacklistPath = DataFolder + "blacklist.json";
 		private static readonly string HighlightsPath = DataFolder + "highlight.json";
+		private static readonly string SettingsPath = AppDomain.CurrentDomain.BaseDirectory + "settings.json";
+
+		private UserSettings user_settings;
 
 		public string FilterName
 		{
@@ -82,6 +85,17 @@ namespace TaintedCain
 			}
 
 			InitializeComponent();
+
+			if (File.Exists(SettingsPath))
+			{
+				user_settings = UserSettings.Load(SettingsPath);
+			}
+			else
+			{
+				user_settings = new UserSettings();
+			}
+
+			SetUiTheme(user_settings.UiTheme);
 		}
 
 		private static CollectionView GetDefaultView(object collection)
@@ -164,6 +178,7 @@ namespace TaintedCain
 				.ToDictionary(item => item.Id, item => item.HighlightColor);
 			
 			File.WriteAllText(HighlightsPath, JsonConvert.SerializeObject(highlights));
+			user_settings.Save(SettingsPath);
 		}
 
 		//Select all text when a pickup textbox is clicked
@@ -231,15 +246,23 @@ namespace TaintedCain
 
 		public void SetTheme_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
-			switch ((String)e.Parameter)
+			SetUiTheme((String)e.Parameter);
+			user_settings.UiTheme = (String) e.Parameter;
+		}
+
+		private bool SetUiTheme(string theme)
+		{
+			switch (theme)
 			{
 				case "Dark":
 					ResourceLocator.SetColorScheme(Application.Current.Resources, ResourceLocator.DarkColorScheme);
-					break;
+					return true;
 				case "Light":
 					ResourceLocator.SetColorScheme(Application.Current.Resources, ResourceLocator.LightColorScheme);
-					break;
+					return true;
 			}
+
+			return false;
 		}
 	}
 
