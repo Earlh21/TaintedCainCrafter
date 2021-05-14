@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using AdonisUI;
 using Newtonsoft.Json;
 
 namespace TaintedCain
@@ -227,6 +228,19 @@ namespace TaintedCain
 			var about_window = new AboutWindow();
 			about_window.ShowDialog();
 		}
+
+		public void SetTheme_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			switch ((String)e.Parameter)
+			{
+				case "Dark":
+					ResourceLocator.SetColorScheme(Application.Current.Resources, ResourceLocator.DarkColorScheme);
+					break;
+				case "Light":
+					ResourceLocator.SetColorScheme(Application.Current.Resources, ResourceLocator.LightColorScheme);
+					break;
+			}
+		}
 	}
 
 	public static class Commands
@@ -246,5 +260,6 @@ namespace TaintedCain
 		public static RoutedCommand SetHighlighter = new RoutedCommand("Set Highlighter", typeof(Commands));
 		public static RoutedCommand ViewHighlighter = new RoutedCommand("View Highlighter", typeof(Commands));
 		public static RoutedCommand ViewAbout = new RoutedCommand("View About", typeof(Commands));
+		public static RoutedCommand SetTheme = new RoutedCommand("Set Theme", typeof(Commands));
 	}
 }

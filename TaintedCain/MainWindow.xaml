@@ -27,6 +27,7 @@
         <CommandBinding Command="local:Commands.DecrementPickup" Executed="DecrementPickup_OnExecute" />
         <CommandBinding Command="local:Commands.ViewHighlighter" Executed="ViewHighlighter_OnExecute" />
         <CommandBinding Command="local:Commands.ViewAbout" Executed="ViewAbout_OnExecute" />
+        <CommandBinding Command="local:Commands.SetTheme" Executed="SetTheme_OnExecute"/>
     </Window.CommandBindings>
 
     <Window.Resources>
@@ -67,7 +68,12 @@
             <MenuItem Header="View">
                 <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist" />
                 <MenuItem Header="Highlighter" Command="local:Commands.ViewHighlighter" />
-            </MenuItem>
+                <Separator/>
+                <MenuItem Header="Theme">
+                    <MenuItem Header="Dark" Command="local:Commands.SetTheme" CommandParameter="Dark"/>
+                    <MenuItem Header="Light" Command="local:Commands.SetTheme" CommandParameter="Light"/>
+                </MenuItem>
+                </MenuItem>
 
             <MenuItem Header="Help">
                 <MenuItem Header="About" Command="local:Commands.ViewAbout" />
