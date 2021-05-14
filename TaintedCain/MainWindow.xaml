@@ -106,7 +106,7 @@
                         <TextBlock Width="80" TextAlignment="Center" VerticalAlignment="Center"
                                    Text="{Binding Path=Name}" />
 
-                        <Grid Height="27" Width="38">
+                        <Grid Height="27" Width="41">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="*" />
@@ -116,7 +116,7 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <TextBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Width="25"
+                            <TextBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Width="28"
                                      TextAlignment="Center" VerticalContentAlignment="Center" FontSize="12"
                                      Text="{Binding Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Path=Amount,
                                  NotifyOnSourceUpdated=True}"

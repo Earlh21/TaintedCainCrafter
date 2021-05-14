@@ -147,6 +147,11 @@ namespace TaintedCain
 
 		private void AddRecipes(int changed_id, int old_amount)
 		{
+			if (old_amount >= 8)
+			{
+				 return;
+			}
+			
 			void AddRecipesHelper(List<Pickup> current_recipe, int pickup_index, int prev_length)
 			{
 				Pickup current_pickup = current_recipe[pickup_index];
