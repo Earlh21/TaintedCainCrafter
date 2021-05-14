@@ -33,6 +33,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AdonisUI" Version="1.17.0" />
+      <PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 

@@ -8,6 +8,10 @@
         Title="{Binding ElementName=IViewWindow, Path=Item.Name}" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Name="IViewWindow">
+    
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style> 
 
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.CraftItem" Executed="CraftItem_OnExecute" />

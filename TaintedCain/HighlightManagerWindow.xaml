@@ -8,6 +8,10 @@
         mc:Ignorable="d"
         Title="Highlighter" MinHeight="450" MinWidth="800"
         Name="HWindow">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style> 
+    
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.SetHighlighter" Executed="SetHighlighter_OnExecute" />
         <CommandBinding Command="local:Commands.SetItemHighlight" Executed="SetItemHighlight_OnExecute" />

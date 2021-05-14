@@ -6,6 +6,10 @@
         xmlns:local="clr-namespace:TaintedCain"
         mc:Ignorable="d"
         Title="About" SizeToContent="WidthAndHeight">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style> 
+    
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
