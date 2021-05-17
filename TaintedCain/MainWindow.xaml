@@ -9,7 +9,8 @@
         mc:Ignorable="d"
         Title="Tainted Cain Crafter" MinWidth="1000" MinHeight="600"
         Name="MWindow"
-        Closing="MainWindow_OnClosing">
+        Closing="MainWindow_OnClosing"
+        MouseEnter="MainWindow_OnMouseEnter">
 
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
@@ -28,6 +29,7 @@
         <CommandBinding Command="local:Commands.ViewHighlighter" Executed="ViewHighlighter_OnExecute" />
         <CommandBinding Command="local:Commands.ViewAbout" Executed="ViewAbout_OnExecute" />
         <CommandBinding Command="local:Commands.SetTheme" Executed="SetTheme_OnExecute"/>
+        <CommandBinding Command="local:Commands.Close" Executed="Close_OnExecute"/>
     </Window.CommandBindings>
 
     <Window.Resources>
@@ -62,7 +64,7 @@
 
         <Menu Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem Header="Close" Command="Close" />
+                <MenuItem Header="Close" Command="local:Commands.Close" />
             </MenuItem>
 
             <MenuItem Header="View">
