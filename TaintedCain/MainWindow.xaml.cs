@@ -304,9 +304,6 @@ namespace TaintedCain
 
 		public void ViewAbout_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
-			
-			return;
-			
 			var about_window = new AboutWindow();
 			about_window.ShowDialog();
 		}
