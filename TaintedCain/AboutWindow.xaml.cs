@@ -1,8 +1,6 @@
-using System.Windows;
-
 namespace TaintedCain
 {
-	public partial class AboutWindow : Window
+	public partial class AboutWindow
 	{
 		public AboutWindow()
 		{

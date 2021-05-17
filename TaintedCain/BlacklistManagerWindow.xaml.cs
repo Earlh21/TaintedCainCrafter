@@ -1,12 +1,10 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
 namespace TaintedCain
 {
-	public partial class BlacklistManagerWindow : Window
+	public partial class BlacklistManagerWindow
 	{
 		public ObservableCollection<Item> Items { get; } = MainWindow.ItemManager.Items;
 

@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace TaintedCain
 {
-	public partial class HighlightManagerWindow : Window
+	public partial class HighlightManagerWindow
 	{
 		private string filter_name = "";
 		private string filter_description = "";

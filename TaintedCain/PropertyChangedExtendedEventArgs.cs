@@ -7,11 +7,11 @@ namespace TaintedCain
 		public virtual T OldValue { get; private set; }
 		public virtual T NewValue { get; private set; }
 
-		public PropertyChangedExtendedEventArgs(string propertyName, T oldValue, T newValue)
-			: base(propertyName)
+		public PropertyChangedExtendedEventArgs(string property_name, T old_value, T new_value)
+			: base(property_name)
 		{
-			OldValue = oldValue;
-			NewValue = newValue;
+			OldValue = old_value;
+			NewValue = new_value;
 		}
 	}
 }
