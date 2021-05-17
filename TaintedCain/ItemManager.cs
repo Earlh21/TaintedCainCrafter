@@ -56,7 +56,7 @@ namespace TaintedCain
 
 		public ItemManager()
 		{
-			for (int i = 1; i <= Pickup.Names.Length; i++)
+			for (int i = 1; i <= 25; i++)
 			{
 				Pickup pickup = new Pickup(i);
 				pickup.PropertyChanged += PickupOnPropertyChanged;
@@ -187,7 +187,7 @@ namespace TaintedCain
 
 			List<Pickup> empty_recipe = new List<Pickup>();
 
-			for (int i = 1; i <= Pickup.Names.Length; i++)
+			for (int i = 1; i <= 25; i++)
 			{
 				empty_recipe.Add(new Pickup(i));
 			}

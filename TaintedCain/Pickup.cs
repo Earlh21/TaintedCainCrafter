@@ -8,7 +8,7 @@ namespace TaintedCain
 {
 	public class Pickup : INotifyPropertyChanged
 	{
-		public static readonly string[] Names =
+		private static readonly string[] Names =
 		{
 			"Red Heart",	"Soul Heart",		"Black Heart",		"Eternal Heart",
 			"Gold Heart",	"Bone Heart",		"Rotten Heart",		"Penny",
@@ -19,13 +19,14 @@ namespace TaintedCain
 			"Cracked Key"
 		};
 
+		private static readonly BitmapImage[] Images = Names.Select(name => new BitmapImage(
+			new Uri(AppDomain.CurrentDomain.BaseDirectory + "Pickups\\" + name + ".png"))).ToArray();
+
 		private int id;
 		private BitmapImage image;
 		private int amount;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
-		
-		private string ImagePath => AppDomain.CurrentDomain.BaseDirectory + "Pickups\\" + Name + ".png";
 
 		public string Name => Names[id - 1];
 
@@ -35,7 +36,7 @@ namespace TaintedCain
 			set
 			{
 				id = value;
-				Image = new BitmapImage(new Uri(ImagePath));
+				Image = Images[value - 1];
 				
 				NotifyPropertyChanged("Id");
 				NotifyPropertyChanged("Name");
