@@ -1,16 +1,43 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace TaintedCain
 {
 	public static class Crafting
 	{
+		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
+		private static (string name, (int id, float weight)[] items)[] ItemPools { get; }
+		private static Dictionary<int, int> ItemQualities { get; }
+
+		static Crafting()
+		{
+			var culture_format = new CultureInfo("en-US");
+			
+			ItemPools =
+				XElement.Load(DataFolder + "itempools.xml")
+					.XPathSelectElements("Pool")
+					.Select(e => (
+						e.Attribute("Name").Value,
+						e.Elements("Item").Select(x => (Convert.ToInt32(x.Attribute("Id").Value),
+							Convert.ToSingle(x.Attribute("Weight").Value, culture_format))).ToArray()))
+					.ToArray();
+
+			ItemQualities =
+				XElement.Load(DataFolder + "items_metadata.xml")
+					.XPathSelectElements("item")
+					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
+						e => Convert.ToInt32(e.Attribute("quality").Value));
+		}
+		
 		/**
 		 * Taken from bladecoding on Github
 		 */
 		
-		public static int CalculateCrafting(int[] idxs, (string name, (int id, float weight)[] items)[] itempools,
-			Dictionary<int, int> itemsquality)
+		public static int CalculateCrafting(int[] idxs)
 		{
 			var rng = new Rng(0x77777770, 0, 0, 0);
 			var shiftCounts = new int[CraftingShifts.Length];
@@ -110,10 +137,10 @@ namespace TaintedCain
 					qualityMax = 2;
 				}
 
-				var pool = itempools[poolChances[i].idx];
+				var pool = ItemPools[poolChances[i].idx];
 				foreach (var item in pool.items)
 				{
-					var quality = itemsquality[item.id];
+					var quality = ItemQualities[item.id];
 					if (quality < qualityMin)
 						continue;
 					if (quality > qualityMax)
@@ -138,75 +165,6 @@ namespace TaintedCain
 
 			return 25;
 		}
-
-		static T[] ToArray<T>((T, T) t)
-		{
-			return new T[] {t.Item1, t.Item2};
-		}
-
-		static int[] PickupWhitelist = new int[]
-		{
-			10,
-			20,
-			30,
-			40,
-			42,
-			70,
-			90,
-			300,
-		};
-
-		static Dictionary<int, (int, int)[]> PickupIndexes = new Dictionary<int, (int, int)[]>
-		{
-			{
-				10, new[]
-				{
-					(1, 0),
-					(1, 0),
-					(2, 0),
-					(4, 0),
-					(1, 1),
-					(3, 0),
-					(5, 0),
-					(2, 0),
-					(1, 0),
-					(2, 1),
-					(6, 0),
-					(7, 0),
-				}
-			},
-			{
-				20, new[]
-				{
-					(8, 0),
-					(9, 0),
-					(10, 0),
-					(8, 8),
-					(11, 0),
-				}
-			},
-			{
-				30, new[]
-				{
-					(12, 0),
-					(13, 0),
-					(12, 12),
-					(14, 0),
-				}
-			},
-			{
-				40, new[]
-				{
-					(15, 0),
-					(15, 15),
-					(0, 0),
-					(16, 0),
-					(0, 0),
-					(0, 0),
-					(17, 0),
-				}
-			},
-		};
 
 		static (int, int, int)[] CraftingShifts = new (int, int, int)[]
 		{
@@ -292,7 +250,7 @@ namespace TaintedCain
 			(0x00000011, 0x0000000F, 0x0000001A)
 		};
 
-		static int[] CraftingWeights = new int[]
+		static int[] CraftingWeights =
 		{
 			0x00000000,
 			0x00000001,
@@ -322,33 +280,6 @@ namespace TaintedCain
 			0x00000002,
 			0x00000001
 		};
-
-		static string SeedToString(uint num)
-		{
-			const string chars = "ABCDEFGHJKLMNPQRSTWXYZ01234V6789";
-			byte x = 0;
-			var tnum = num;
-			while (tnum != 0)
-			{
-				x += ((byte) tnum);
-				x += (byte) (x + (x >> 7));
-				tnum >>= 5;
-			}
-
-			num ^= 0x0FEF7FFD;
-			tnum = (num) << 8 | x;
-
-			var ret = new char[8];
-			for (int i = 0; i < 6; i++)
-			{
-				ret[i] = chars[(int) (num >> (27 - (i * 5)) & 0x1F)];
-			}
-
-			ret[6] = chars[(int) (tnum >> 5 & 0x1F)];
-			ret[7] = chars[(int) (tnum & 0x1F)];
-
-			return new string(ret);
-		}
 
 		public class Rng
 		{

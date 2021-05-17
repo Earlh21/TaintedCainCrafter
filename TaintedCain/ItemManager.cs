@@ -13,8 +13,6 @@ namespace TaintedCain
 	public class ItemManager
 	{
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
-		private static (string name, (int id, float weight)[] items)[] ItemPools { get; }
-		private static Dictionary<int, int> ItemQualities { get; }
 		
 		public static Dictionary<int, string> ItemNames { get; }
 		public static Dictionary<int, string> ItemDescriptions { get; }
@@ -24,23 +22,6 @@ namespace TaintedCain
 
 		static ItemManager()
 		{
-			var culture_format = new CultureInfo("en-US");
-		
-			ItemPools =
-				XElement.Load(DataFolder + "itempools.xml")
-					.XPathSelectElements("Pool")
-					.Select(e => (
-						e.Attribute("Name").Value,
-						e.Elements("Item").Select(x => (Convert.ToInt32(x.Attribute("Id").Value),
-							Convert.ToSingle(x.Attribute("Weight").Value, culture_format))).ToArray()))
-					.ToArray();
-
-			ItemQualities =
-				XElement.Load(DataFolder + "items_metadata.xml")
-					.XPathSelectElements("item")
-					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
-						e => Convert.ToInt32(e.Attribute("quality").Value));
-
 			ItemNames =
 				XElement.Load(DataFolder + "items.xml")
 					.Elements()
@@ -212,7 +193,7 @@ namespace TaintedCain
 				}
 			}
 
-			int item_id = Crafting.CalculateCrafting(crafting_array.ToArray(), ItemPools, ItemQualities);
+			int item_id = Crafting.CalculateCrafting(crafting_array.ToArray());
 
 			Item existing_item = Items.FirstOrDefault(i => i.Id == item_id);
 			existing_item?.Recipes.Add(recipe_copy);
