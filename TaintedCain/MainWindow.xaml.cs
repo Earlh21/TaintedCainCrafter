@@ -5,10 +5,15 @@ using System.ComponentModel;
 using System.Windows.Media;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 using AdonisUI;
 using Newtonsoft.Json;
 
@@ -21,7 +26,7 @@ namespace TaintedCain
 	{
 		private string filter_name = "";
 		private string filter_description = "";
-		
+
 		public static ItemManager ItemManager { get; } = new ItemManager();
 
 		public static ObservableCollection<Tuple<Item, List<Pickup>>> PlannedRecipes { get; set; } =
@@ -34,23 +39,24 @@ namespace TaintedCain
 
 		private UserSettings user_settings;
 
+
 		public string FilterName
 		{
 			get => filter_name;
 			set
 			{
 				filter_name = value;
-				((CollectionViewSource)Resources["ItemsView"]).View.Refresh();
+				((CollectionViewSource) Resources["ItemsView"]).View.Refresh();
 			}
 		}
-		
+
 		public string FilterDescription
 		{
 			get => filter_description;
 			set
 			{
 				filter_description = value;
-				((CollectionViewSource)Resources["ItemsView"]).View.Refresh();
+				((CollectionViewSource) Resources["ItemsView"]).View.Refresh();
 			}
 		}
 
@@ -59,7 +65,7 @@ namespace TaintedCain
 			if (File.Exists(BlacklistPath))
 			{
 				List<int> blacklisted_ids = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText(BlacklistPath))
-					?? new List<int>();
+				                            ?? new List<int>();
 
 				foreach (int id in blacklisted_ids)
 				{
@@ -75,7 +81,7 @@ namespace TaintedCain
 			if (File.Exists(HighlightsPath))
 			{
 				var item_highlights =
-					JsonConvert.DeserializeObject<Dictionary<int, Color>>(File.ReadAllText(HighlightsPath)) 
+					JsonConvert.DeserializeObject<Dictionary<int, Color>>(File.ReadAllText(HighlightsPath))
 					?? new Dictionary<int, Color>();
 
 				foreach (Item item in ItemManager.Items)
@@ -96,6 +102,64 @@ namespace TaintedCain
 			}
 
 			SetUiTheme(user_settings.UiTheme);
+
+			Task.Run(CompanionServerAsync);
+			
+			//If this isn't set, the UI won't redraw when messages are received
+			//while Isaac is running in fullscreen
+			RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+		}
+
+		private async Task CompanionServerAsync()
+		{
+			TcpListener server = new TcpListener(IPAddress.Parse("127.0.0.1"), 12344);
+			server.Start();
+
+			while (true)
+			{
+				try
+				{
+					Socket client = await server.AcceptSocketAsync();
+					while (true)
+					{
+						if (client.Poll(0, SelectMode.SelectRead) && client.Available == 0)
+						{
+							break;
+						}
+
+						Byte[] buffer = new byte[2048];
+						client.Receive(buffer);
+
+						string message = System.Text.Encoding.Default.GetString(buffer);
+
+						try
+						{
+							List<int> pickup_values = message.Replace("\n", "")
+								.Replace("\r", "")
+								.Split(',')
+								.Select(p => Convert.ToInt32(p))
+								.ToList();
+
+							List<Pickup> pickups = new List<Pickup>();
+							for (int i = 0; i < pickup_values.Count; i++)
+							{
+								pickups.Add(new Pickup(i + 1, pickup_values[i]));
+							}
+
+							App.Current.Dispatcher.Invoke(delegate
+							{
+								ItemManager.SetPickups(pickups);
+							});
+						}
+						catch (FormatException)
+						{
+						}
+					}
+				}
+				catch (ObjectDisposedException)
+				{
+				}
+			}
 		}
 
 		private static CollectionView GetDefaultView(object collection)
@@ -171,12 +235,12 @@ namespace TaintedCain
 			var blacklisted_ids = ItemManager.Items
 				.Where(item => item.IsBlacklisted)
 				.Select(item => item.Id).ToList();
-			
+
 			File.WriteAllText(BlacklistPath, JsonConvert.SerializeObject(blacklisted_ids));
 
 			var highlights = ItemManager.Items
 				.ToDictionary(item => item.Id, item => item.HighlightColor);
-			
+
 			File.WriteAllText(HighlightsPath, JsonConvert.SerializeObject(highlights));
 			user_settings.Save(SettingsPath);
 		}
@@ -240,13 +304,16 @@ namespace TaintedCain
 
 		public void ViewAbout_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
+			
+			return;
+			
 			var about_window = new AboutWindow();
 			about_window.ShowDialog();
 		}
 
 		public void SetTheme_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
-			SetUiTheme((String)e.Parameter);
+			SetUiTheme((String) e.Parameter);
 			user_settings.UiTheme = (String) e.Parameter;
 		}
 
@@ -263,6 +330,17 @@ namespace TaintedCain
 			}
 
 			return false;
+		}
+
+		public void Close_OnExecute(object sender, ExecutedRoutedEventArgs e)
+		{
+			Close();
+		}
+
+		private void MainWindow_OnMouseEnter(object sender, MouseEventArgs e)
+		{
+			var view = (CollectionViewSource) Resources["ItemsView"];
+			view.View.Refresh();
 		}
 	}
 
@@ -284,5 +362,6 @@ namespace TaintedCain
 		public static RoutedCommand ViewHighlighter = new RoutedCommand("View Highlighter", typeof(Commands));
 		public static RoutedCommand ViewAbout = new RoutedCommand("View About", typeof(Commands));
 		public static RoutedCommand SetTheme = new RoutedCommand("Set Theme", typeof(Commands));
+		public static RoutedCommand Close = new RoutedCommand("Close", typeof(Commands));
 	}
 }

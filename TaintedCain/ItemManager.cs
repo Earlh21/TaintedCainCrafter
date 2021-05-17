@@ -87,6 +87,12 @@ namespace TaintedCain
 			}
 		}
 
+		public void SetPickups(List<Pickup> pickups)
+		{
+			Clear();
+			AddPickups(pickups);
+		}
+
 		public void AddPickups(List<Pickup> pickups)
 		{
 			foreach (Pickup pickup in pickups)
