@@ -18,6 +18,17 @@ namespace TaintedCain
 			"Card",			"Pill",				"Rune",				"Dice Shard",
 			"Cracked Key"
 		};
+		
+		private static readonly float[] Qualities =
+		{
+			1,				4,					5,					5,
+			5,				5,					1,					1,
+			3,				5,					8,					2,
+			5,				5,					2,					6,
+			10,				2,					4,					8,
+			2,				2,					4,					4,
+			2
+		};
 
 		private static readonly BitmapImage[] Images = Names.Select(name => new BitmapImage(
 			new Uri(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Pickups\\" + name + ".png"))).ToArray();
@@ -42,6 +53,8 @@ namespace TaintedCain
 				NotifyPropertyChanged("Name");
 			}
 		}
+
+		public float Quality => Qualities[Id - 1];
 
 		public BitmapImage Image
 		{

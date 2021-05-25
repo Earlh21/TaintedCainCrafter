@@ -37,12 +37,14 @@ namespace TaintedCain
 			discrete_pickups = new Lazy<Pickup[]>(InitDiscretePickups);
 
 			int size = 0;
+			float total_quality = 0;
 			foreach (var pickup in pickups)
 			{
 				if (pickup.Amount < 1) continue;
 
 				this.pickups.Add(pickup.Copy());
 				size += pickup.Amount;
+				total_quality += pickup.Quality * pickup.Amount;
 
 				if (size > 8)
 				{
@@ -54,6 +56,8 @@ namespace TaintedCain
 			{
 				throw new ArgumentException("Not enough pickups.");
 			}
+
+			AverageQuality = total_quality / 8;
 		}
 
 		public bool CanCraft(ICollection<Pickup> available)
