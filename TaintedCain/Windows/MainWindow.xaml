@@ -9,8 +9,7 @@
         mc:Ignorable="d"
         Title="Tainted Cain Crafter" MinWidth="1000" MinHeight="600"
         Name="MWindow"
-        Closing="MainWindow_OnClosing"
-        MouseEnter="MainWindow_OnMouseEnter">
+        Closing="MainWindow_OnClosing">
 
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>

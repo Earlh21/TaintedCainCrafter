@@ -332,12 +332,6 @@ namespace TaintedCain
 		{
 			Close();
 		}
-
-		private void MainWindow_OnMouseEnter(object sender, MouseEventArgs e)
-		{
-			var view = (CollectionViewSource) Resources["ItemsView"];
-			view.View.Refresh();
-		}
 	}
 
 	public static class Commands
@@ -359,5 +353,6 @@ namespace TaintedCain
 		public static RoutedCommand ViewAbout = new RoutedCommand("View About", typeof(Commands));
 		public static RoutedCommand SetTheme = new RoutedCommand("Set Theme", typeof(Commands));
 		public static RoutedCommand Close = new RoutedCommand("Close", typeof(Commands));
+		public static RoutedCommand BlacklistPickup = new RoutedCommand("Blacklist Pickup", typeof(Commands));
 	}
 }

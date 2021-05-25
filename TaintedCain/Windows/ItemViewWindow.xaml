@@ -18,7 +18,7 @@
     <Window.Resources>
         <CollectionViewSource Source="{Binding ElementName=IViewWindow, Path=Item.Recipes}"
                               x:Key="RecipesView"
-                              IsLiveFilteringRequested="True">
+                              Filter="RecipeFilter">
             <CollectionViewSource.SortDescriptions>
                 <componentModel:SortDescription PropertyName="AverageQuality" Direction="Ascending"/>
             </CollectionViewSource.SortDescriptions>
@@ -28,6 +28,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.CraftItem" Executed="CraftItem_OnExecute" />
         <CommandBinding Command="local:Commands.PlanItem" Executed="PlanItem_OnExecute"/>
+        <CommandBinding Command="local:Commands.BlacklistPickup" Executed="BlacklistPickup_OnExecute"/>
     </Window.CommandBindings>
 
     <Grid Margin="5">
@@ -36,6 +37,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -54,7 +56,9 @@
                    Text="{Binding ElementName=IViewWindow, Path=Item.Description}"
                    Margin="0,0,0,10" />
 
-        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled"
+        <TextBlock Grid.Row="3" Text="Click a pickup to blacklist it." HorizontalAlignment="Center"/>
+        
+        <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       MaxHeight="400">
             <ItemsControl HorizontalAlignment="Center"
@@ -80,7 +84,13 @@
                                     <DataTemplate>
                                         <Image Width="24" Height="24" Source="{Binding Path=Image}"
                                                ToolTip="{Binding Path=Name}"
-                                               Margin="0,0,3,0" />
+                                               Margin="0,0,3,0">
+                                            <Image.InputBindings>
+                                                <MouseBinding Gesture="LeftClick"
+                                                              Command="local:Commands.BlacklistPickup"
+                                                              CommandParameter="{Binding}"/>
+                                            </Image.InputBindings>
+                                        </Image>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -103,6 +113,6 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <Button Grid.Row="4" Content="Close" IsCancel="True" />
+        <Button Grid.Row="5" Content="Close" IsCancel="True" />
     </Grid>
 </Window>
