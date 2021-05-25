@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+    <PropertyGroup>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    </PropertyGroup>
+    
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -34,7 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="icon.ico" />
       <Resource Include="icon.ico" />
     </ItemGroup>
 
