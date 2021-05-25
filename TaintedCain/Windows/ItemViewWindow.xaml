@@ -4,6 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TaintedCain"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="{Binding ElementName=IViewWindow, Path=Item.Name}" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
@@ -13,6 +15,16 @@
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style> 
 
+    <Window.Resources>
+        <CollectionViewSource Source="{Binding ElementName=IViewWindow, Path=Item.Recipes}"
+                              x:Key="RecipesView"
+                              IsLiveFilteringRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="AverageQuality" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+    
     <Window.CommandBindings>
         <CommandBinding Command="local:Commands.CraftItem" Executed="CraftItem_OnExecute" />
         <CommandBinding Command="local:Commands.PlanItem" Executed="PlanItem_OnExecute"/>
@@ -46,7 +58,7 @@
                       VerticalScrollBarVisibility="Auto"
                       MaxHeight="400">
             <ItemsControl HorizontalAlignment="Center"
-                          ItemsSource="{Binding ElementName=IViewWindow, Path=Item.Recipes}">
+                          ItemsSource="{Binding Source={StaticResource RecipesView}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" />
