@@ -65,13 +65,13 @@ namespace TaintedCain
 			}
 		}
 
-		public void SetPickups(List<Pickup> pickups)
+		public void SetPickups(IEnumerable<Pickup> pickups)
 		{
 			Clear();
 			AddPickups(pickups);
 		}
 
-		public void AddPickups(List<Pickup> pickups)
+		public void AddPickups(IEnumerable<Pickup> pickups)
 		{
 			foreach (Pickup pickup in pickups)
 			{
@@ -90,7 +90,7 @@ namespace TaintedCain
 			}
 		}
 
-		public void RemovePickups(List<Pickup> pickups)
+		public void RemovePickups(IEnumerable<Pickup> pickups)
 		{
 			foreach (Pickup pickup in pickups)
 			{
@@ -179,27 +179,26 @@ namespace TaintedCain
 			AddRecipesHelper(empty_recipe, 0, 0);
 		}
 		
-		private void AddCraft(List<Pickup> recipe)
+		private void AddCraft(List<Pickup> pickups)
 		{
-			List<Pickup> recipe_copy = new List<Pickup>();
-			List<int> crafting_array = new List<int>();
+			Recipe recipe = new Recipe(pickups);
 
-			foreach (Pickup p in recipe)
+			int[] ids = new int[8];
+			
+			int i = 0;
+			foreach (var pickup in recipe.Pickups)
 			{
-				if (p.Amount == 0) continue;
-
-				recipe_copy.Add(new Pickup(p.Id, p.Amount));
-
-				for (int i = 0; i < p.Amount; i++)
+				for (int j = 0; j < pickup.Amount; j++)
 				{
-					crafting_array.Add(p.Id);
+					ids[i] = pickup.Id;
+					i++;
 				}
 			}
 
-			int item_id = Crafting.CalculateCrafting(crafting_array.ToArray());
+			int item_id = Crafting.CalculateCrafting(ids);
 
 			Item existing_item = Items.FirstOrDefault(i => i.Id == item_id);
-			existing_item?.Recipes.Add(recipe_copy);
+			existing_item?.Recipes.Add(recipe);
 		}
 
 		private void RemoveRecipes(Pickup changed_pickup)
@@ -216,7 +215,7 @@ namespace TaintedCain
 		{
 			for (int j = 0; j < item.Recipes.Count; j++)
 			{
-				Pickup existing = item.Recipes[j].FirstOrDefault(p => p.Id == changed_pickup.Id);
+				Pickup existing = item.Recipes[j].Pickups.FirstOrDefault(p => p.Id == changed_pickup.Id);
 
 				if (existing == null)
 				{

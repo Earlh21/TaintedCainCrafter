@@ -46,7 +46,7 @@
                       VerticalScrollBarVisibility="Auto"
                       MaxHeight="400">
             <ItemsControl HorizontalAlignment="Center"
-                          ItemsSource="{Binding ElementName=IViewWindow, Path=DiscreteRecipes}">
+                          ItemsSource="{Binding ElementName=IViewWindow, Path=Item.Recipes}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" />
@@ -56,7 +56,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
-                            <ItemsControl Name="ItemRecipe" ItemsSource="{Binding}"
+                            <ItemsControl ItemsSource="{Binding DiscretePickups}"
                                           Margin="0,0,10,0">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>

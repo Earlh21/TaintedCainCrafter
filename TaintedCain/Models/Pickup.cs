@@ -33,7 +33,7 @@ namespace TaintedCain
 		public int Id
 		{
 			get => id;
-			set
+			private set
 			{
 				id = value;
 				Image = Images[value - 1];
@@ -81,19 +81,9 @@ namespace TaintedCain
 			PropertyChanged?.Invoke(this, new PropertyChangedExtendedEventArgs<T>(property_name, old_value, new_value));
 		}
 
-		public static bool CanCraft(ICollection<Pickup> recipe, ICollection<Pickup> available)
+		public Pickup Copy()
 		{
-			foreach (var required in recipe)
-			{
-				int? available_amount = available.FirstOrDefault(p => p.Id.Equals(required.Id))?.Amount;
-
-				if (available_amount == null || available_amount < required.Amount)
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return new Pickup(Id, Amount);
 		}
 	}
 }

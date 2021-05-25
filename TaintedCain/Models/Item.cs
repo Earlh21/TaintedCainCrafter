@@ -14,7 +14,7 @@ namespace TaintedCain
 		private BitmapImage image;
 		private bool is_blacklisted;
 		private string description;
-		private ObservableCollection<List<Pickup>> recipes;
+		private ObservableCollection<Recipe> recipes = new ObservableCollection<Recipe>();
 		private Color highlight_color;
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -86,7 +86,7 @@ namespace TaintedCain
 
 		public bool HasRecipes => Recipes.Count > 0;
 
-		public ObservableCollection<List<Pickup>> Recipes
+		public ObservableCollection<Recipe> Recipes
 		{
 			get => recipes;
 			set
@@ -101,7 +101,6 @@ namespace TaintedCain
 			Id = id;
 			Name = name;
 			Description = description;
-			Recipes = new ObservableCollection<List<Pickup>>();
 			HighlightColor = Color.FromArgb(0, 0, 0, 0);
 			
 			Recipes.CollectionChanged += (sender, args) => { NotifyPropertyChanged("HasRecipes");};
@@ -112,11 +111,11 @@ namespace TaintedCain
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property_name));
 		}
 
-		public bool CanCraft(Collection<Pickup> available_pickups)
+		public bool CanCraft(ICollection<Pickup> available_pickups)
 		{
 			foreach (var recipe in recipes)
 			{
-				if (Pickup.CanCraft(recipe, available_pickups))
+				if (recipe.CanCraft(available_pickups))
 				{
 					return true;
 				}
