@@ -9,7 +9,7 @@ namespace TaintedCain
 {
 	public static class Crafting
 	{
-		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
+		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Resources\\Data\\";
 		private static (string name, (int id, float weight)[] items)[] ItemPools { get; }
 		private static Dictionary<int, int> ItemQualities { get; }
 

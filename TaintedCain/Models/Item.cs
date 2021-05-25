@@ -19,7 +19,7 @@ namespace TaintedCain
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private string ImagePath => AppDomain.CurrentDomain.BaseDirectory + "Items\\collectibles_" + Id.ToString().PadLeft(3, '0') + ".png";
+		private string ImagePath => AppDomain.CurrentDomain.BaseDirectory + "Resources\\Items\\collectibles_" + Id.ToString().PadLeft(3, '0') + ".png";
 
 		public int Id
 		{

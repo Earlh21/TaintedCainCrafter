@@ -9,7 +9,7 @@ namespace TaintedCain
 {
 	public class ItemManager
 	{
-		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
+		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Resources\\Data\\";
 		
 		public static Dictionary<int, string> ItemNames { get; }
 		public static Dictionary<int, string> ItemDescriptions { get; }

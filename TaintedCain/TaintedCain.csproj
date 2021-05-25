@@ -19,15 +19,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="Pickups\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-
-        <Content Include="Items\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-
-        <Content Include="Data\*">
+        <Content Include="Resources\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
@@ -43,4 +35,7 @@
       <Resource Include="icon.ico" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Resources" />
+    </ItemGroup>
 </Project>

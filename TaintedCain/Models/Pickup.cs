@@ -20,7 +20,7 @@ namespace TaintedCain
 		};
 
 		private static readonly BitmapImage[] Images = Names.Select(name => new BitmapImage(
-			new Uri(AppDomain.CurrentDomain.BaseDirectory + "Pickups\\" + name + ".png"))).ToArray();
+			new Uri(AppDomain.CurrentDomain.BaseDirectory + "Resources\\Pickups\\" + name + ".png"))).ToArray();
 
 		private int id;
 		private BitmapImage image;

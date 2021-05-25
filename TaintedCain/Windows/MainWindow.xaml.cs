@@ -32,13 +32,12 @@ namespace TaintedCain
 		public static ObservableCollection<Tuple<Item, List<Pickup>>> PlannedRecipes { get; set; } =
 			new ObservableCollection<Tuple<Item, List<Pickup>>>();
 
-		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Data\\";
+		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Resources\\Data\\";
 		private static readonly string BlacklistPath = DataFolder + "blacklist.json";
 		private static readonly string HighlightsPath = DataFolder + "highlight.json";
 		private static readonly string SettingsPath = AppDomain.CurrentDomain.BaseDirectory + "settings.json";
 
 		private UserSettings user_settings;
-
 
 		public string FilterName
 		{
