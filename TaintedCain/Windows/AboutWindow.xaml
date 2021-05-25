@@ -20,6 +20,6 @@
         </Grid.ColumnDefinitions>
         
         <TextBlock Grid.Row="0" FontSize="22" Text="Tainted Cain Crafter" Margin="0,0,0,10"/>
-        <TextBlock Grid.Row="1" FontSize="16" Text="Version 1.3.0"/>
+        <TextBlock Grid.Row="1" FontSize="16" Text="Version 1.3.1"/>
     </Grid>
 </Window>
