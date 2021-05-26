@@ -9,7 +9,7 @@ namespace TaintedCain
 	public partial class ItemViewWindow
 	{
 		public Item Item { get; set; }
-		public Tuple<Item, List<Pickup>> Result { get; private set; }
+		public Tuple<Item, Recipe> Result { get; private set; }
 
 		private List<Pickup> blacklisted_pickups = new List<Pickup>();
 		
@@ -47,11 +47,11 @@ namespace TaintedCain
 
 		public void PlanItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
-			List<Pickup> recipe = (List<Pickup>)e.Parameter;
+			Recipe recipe = (Recipe)e.Parameter;
 			
-			MainWindow.ItemManager.RemovePickups(recipe);
+			MainWindow.ItemManager.RemovePickups(recipe.Pickups);
 
-			Result = new Tuple<Item, List<Pickup>>(Item, recipe);
+			Result = new Tuple<Item, Recipe>(Item, recipe);
 			Close();
 		}
 

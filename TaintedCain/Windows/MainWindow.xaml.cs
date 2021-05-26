@@ -29,8 +29,8 @@ namespace TaintedCain
 
 		public static ItemManager ItemManager { get; } = new ItemManager();
 
-		public static ObservableCollection<Tuple<Item, List<Pickup>>> PlannedRecipes { get; set; } =
-			new ObservableCollection<Tuple<Item, List<Pickup>>>();
+		public static ObservableCollection<Tuple<Item, Recipe>> PlannedRecipes { get; set; } =
+			new ObservableCollection<Tuple<Item, Recipe>>();
 
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Resources\\Data\\";
 		private static readonly string BlacklistPath = DataFolder + "blacklist.json";
@@ -102,6 +102,7 @@ namespace TaintedCain
 
 			SetUiTheme(user_settings.UiTheme);
 
+			AutoUpdater.RunUpdateAsAdmin = false;
 			AutoUpdater.Start("http://ec2-18-189-141-131.us-east-2.compute.amazonaws.com:8000/latest.xml");
 			Task.Run(CompanionServerAsync);
 
@@ -198,25 +199,9 @@ namespace TaintedCain
 
 		public void ReleaseItem_OnExecute(object sender, ExecutedRoutedEventArgs e)
 		{
-			var planned = (Tuple<Item, List<Pickup>>) e.Parameter;
-			List<Pickup> condensed_recipe = new List<Pickup>();
+			var planned = (Tuple<Item, Recipe>) e.Parameter;
 
-			//This recipe is discretized, so condense it to reduce crafting recalculation
-			foreach (Pickup pickup in planned.Item2)
-			{
-				Pickup existing = condensed_recipe.FirstOrDefault(p => p.Id == pickup.Id);
-
-				if (existing == null)
-				{
-					condensed_recipe.Add(new Pickup(pickup.Id, pickup.Amount));
-				}
-				else
-				{
-					existing.Amount += pickup.Amount;
-				}
-			}
-
-			ItemManager.AddPickups(condensed_recipe);
+			ItemManager.AddPickups(planned.Item2.Pickups);
 			PlannedRecipes.Remove(planned);
 		}
 

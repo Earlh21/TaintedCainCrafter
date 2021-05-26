@@ -211,7 +211,7 @@
                                         Source="{Binding Path=Item1.Image}"
                                         ToolTip="{Binding Path=Item1.Description}" />
 
-                                    <ItemsControl Name="ItemRecipe" ItemsSource="{Binding Path=Item2}"
+                                    <ItemsControl Name="ItemRecipe" ItemsSource="{Binding Path=Item2.DiscretePickups}"
                                                   HorizontalAlignment="Center">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
