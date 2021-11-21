@@ -91,128 +91,121 @@ namespace TaintedCain
                 }
             }
 
-            var rng = new Rng(seed, 0, 0, 0);
-            var shiftCounts = new int[CraftingShifts.Length];
-            var weight = 0;
-
-            if (idxs.Length != 8)
-                throw new ArgumentException();
-
+            var item_count = new int[CraftingShifts.Length];
+            var item_score_sum = 0;
+            
             foreach (var idx in idxs)
             {
-                ++shiftCounts[idx];
-                weight += CraftingWeights[idx];
+                ++item_count[idx];
+                item_score_sum += CraftingWeights[idx];
             }
 
-            for (int i = 0; i < shiftCounts.Length; i++)
-            {
-                for (int j = 0; j < shiftCounts[i]; j++)
-                {
-                    rng.Shift1 = CraftingShifts[i].Item1;
-                    rng.Shift2 = CraftingShifts[i].Item2;
-                    rng.Shift3 = CraftingShifts[i].Item3;
-                    rng.Next();
-                }
-            }
-
-            rng.Shift1 = 1;
-            rng.Shift2 = 21;
-            rng.Shift3 = 20;
-
-            var poolChances = new List<(int idx, float weight)>
+            var weight_list = new List<(int idx, float weight)>
             {
                 (0, 1f),
                 (1, 2f),
                 (2, 2f),
-                (4, shiftCounts[4] * 10f),
-                (3, shiftCounts[3] * 10f),
-                (5, shiftCounts[6] * 5f),
-                (8, shiftCounts[5] * 10f),
-                (12, shiftCounts[7] * 10f),
-                (9, shiftCounts[25] * 10f),
+                (4, item_count[4] * 10f),
+                (3, item_count[3] * 10f),
+                (5, item_count[6] * 5f),
+                (8, item_count[5] * 10f),
+                (12, item_count[7] * 10f),
+                (9, item_count[25] * 10f),
+                (7, item_count[29] * 10f)
             };
 
-            var combined = shiftCounts[8] + shiftCounts[1] + shiftCounts[12] + shiftCounts[15];
+            var combined = item_count[8] + item_count[1] + item_count[12] + item_count[15];
             if (combined == 0)
-                poolChances.Add((26, shiftCounts[23] * 10f));
+                weight_list.Add((26, item_count[23] * 10f));
 
+            var rng = new Rng(seed);
 
-            var totalWeight = 0f;
-            var itemWeights = new float[ItemQualities.Keys.Max() + 1];
-
-
-            for (int i = 0; i < poolChances.Count; i++)
+            for (int i = 0; i < item_count.Length; i++)
             {
-                var val = poolChances[i].Item1;
-                if (poolChances[i].Item2 <= 0)
-                    continue;
-
-                var qualityMin = 0;
-                var qualityMax = 1;
-                var n = weight;
-                if (val >= 3 && val <= 5)
-                    n -= 5;
-
-                if (n > 34)
+                for (int j = 0; j < item_count[i]; j++)
                 {
-                    qualityMin = 4;
-                    qualityMax = 4;
-                }
-                else if (n > 30)
-                {
-                    qualityMin = 3;
-                    qualityMax = 4;
-                }
-                else if (n > 26)
-                {
-                    qualityMin = 2;
-                    qualityMax = 4;
-                }
-                else if (n > 22)
-                {
-                    qualityMin = 1;
-                    qualityMax = 4;
-                }
-                else if (n > 18)
-                {
-                    qualityMin = 1;
-                    qualityMax = 3;
-                }
-                else if (n > 14)
-                {
-                    qualityMin = 1;
-                    qualityMax = 2;
-                }
-                else if (n > 8)
-                {
-                    qualityMin = 0;
-                    qualityMax = 2;
-                }
-
-                var pool = ItemPools[poolChances[i].idx];
-                foreach (var item in pool.items)
-                {
-                    var quality = ItemQualities[item.id];
-                    if (quality < qualityMin)
-                        continue;
-                    if (quality > qualityMax)
-                        continue;
-
-                    var w = item.weight * poolChances[i].weight;
-                    itemWeights[item.id] += w;
-                    totalWeight += w;
+                    rng.Next(i);
                 }
             }
 
-            if (totalWeight <= 0)
+            var total_weight = 0f;
+            var item_weights = new float[ItemQualities.Keys.Max() + 1];
+            
+            for (int weight_select_i = 0; weight_select_i < weight_list.Count; weight_select_i++)
+            {
+                if (weight_list[weight_select_i].Item2 <= 0)
+                    continue;
+
+                var score = item_score_sum;
+                var id = weight_list[weight_select_i].idx;
+                if (id == 4 || id == 3 || id == 5)
+                {
+                    score -= 5;
+                }
+                
+                var quality_min = 0;
+                var quality_max = 1;
+
+                if (score > 34)
+                {
+                    quality_min = 4;
+                    quality_max = 4;
+                }
+                else if (score > 30)
+                {
+                    quality_min = 3;
+                    quality_max = 4;
+                }
+                else if (score > 26)
+                {
+                    quality_min = 3;
+                    quality_max = 4;
+                }
+                else if (score > 22)
+                {
+                    quality_min = 2;
+                    quality_max = 4;
+                }
+                else if (score > 18)
+                {
+                    quality_min = 2;
+                    quality_max = 3;
+                }
+                else if (score > 14)
+                {
+                    quality_min = 1;
+                    quality_max = 2;
+                }
+                else if (score > 8)
+                {
+                    quality_min = 0;
+                    quality_max = 2;
+                }
+
+                var pool = ItemPools[weight_list[weight_select_i].idx];
+                foreach (var item in pool.items)
+                {
+                    var quality = ItemQualities[item.id];
+                    if (quality < quality_min)
+                        continue;
+                    if (quality > quality_max)
+                        continue;
+
+                    var w = item.weight * weight_list[weight_select_i].weight;
+                    item_weights[item.id] += w;
+                    total_weight += w;
+                }
+            }
+
+            if (total_weight <= 0)
                 return 25;
 
-            var target = rng.NextFloat() * totalWeight;
-            for (int i = 0; i < itemWeights.Length; i++)
+            var target = rng.NextFloat() * total_weight;
+            for (int i = 0; i < item_weights.Length; i++)
             {
-                if (target < itemWeights[i])
+                if (target < item_weights[i])
                     return i;
-                target -= itemWeights[i];
+                target -= item_weights[i];
             }
 
             return 25;
@@ -304,33 +297,11 @@ namespace TaintedCain
 
         static int[] CraftingWeights =
         {
-            0x00000000,
-            0x00000001,
-            0x00000004,
-            0x00000005,
-            0x00000005,
-            0x00000005,
-            0x00000005,
-            0x00000001,
-            0x00000001,
-            0x00000003,
-            0x00000005,
-            0x00000008,
-            0x00000002,
-            0x00000005,
-            0x00000005,
-            0x00000002,
-            0x00000006,
-            0x0000000A,
-            0x00000002,
-            0x00000004,
-            0x00000008,
-            0x00000002,
-            0x00000002,
-            0x00000004,
-            0x00000004,
-            0x00000002,
-            0x00000001
+            0x00000000, 0x00000001, 0x00000004, 0x00000005, 0x00000005, 0x00000005, 0x00000005,
+            0x00000001, 0x00000001, 0x00000003, 0x00000005, 0x00000008, 0x00000002, 0x00000007, 
+            0x00000005, 0x00000002, 0x00000007, 0x0000000A, 0x00000002, 0x00000004, 0x00000008, 
+            0x00000002, 0x00000002, 0x00000004, 0x00000004, 0x00000002, 0x00000007, 0x00000007, 
+            0x00000007, 0x00000000, 0x00000001
         };
 
         private static Dictionary<int[], int> StaticRecipes = new Dictionary<int[], int>()
@@ -376,32 +347,26 @@ namespace TaintedCain
         public class Rng
         {
             public uint Seed;
-            public int Shift1;
-            public int Shift2;
-            public int Shift3;
 
-            public uint Next()
+            public uint Next(int offset_id)
             {
                 var num = Seed;
-                num ^= num >> Shift1;
-                num ^= num << Shift2;
-                num ^= num >> Shift3;
-                Seed = num;
+                num ^= num >> CraftingShifts[offset_id].Item1 & 0xFFFFFFFF;
+                num ^= num << CraftingShifts[offset_id].Item2 & 0xFFFFFFFF;
+                num ^= num >> CraftingShifts[offset_id].Item3 & 0xFFFFFFFF;
+                Seed = num >> 0;
                 return num;
             }
 
-            public Rng(uint seed, int s1, int s2, int s3)
+            public Rng(uint seed)
             {
-                this.Seed = seed;
-                Shift1 = s1;
-                Shift2 = s2;
-                Shift3 = s3;
+                Seed = seed;
             }
 
             public unsafe float NextFloat()
             {
                 uint multi = 0x2F7FFFFE;
-                return Next() * (*(float*)&multi);
+                return Next(6) * (*(float*)&multi);
             }
         };
     }
