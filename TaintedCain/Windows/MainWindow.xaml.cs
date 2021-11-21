@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using AutoUpdaterDotNET;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -120,9 +119,6 @@ namespace TaintedCain
 			}
 
 			SetUiTheme(user_settings.UiTheme);
-
-			AutoUpdater.RunUpdateAsAdmin = false;
-			AutoUpdater.Start("http://ec2-18-189-141-131.us-east-2.compute.amazonaws.com:8000/latest.xml");
 			Task.Run(CompanionServerAsync);
 
 			//If this isn't set, the UI won't redraw when messages are received
