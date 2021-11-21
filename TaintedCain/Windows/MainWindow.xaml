@@ -66,6 +66,10 @@
                 <MenuItem Header="Close" Command="local:Commands.Close" />
             </MenuItem>
 
+            <MenuItem Header="Edit">
+                <MenuItem Header="Set Seed" Command="{Binding ElementName=MWindow, Path=SetSeed}"/>
+            </MenuItem>
+            
             <MenuItem Header="View">
                 <MenuItem Header="Blacklist Manager" Command="local:Commands.ViewBlacklist" />
                 <MenuItem Header="Highlighter" Command="local:Commands.ViewHighlighter" />
@@ -74,7 +78,7 @@
                     <MenuItem Header="Dark" Command="local:Commands.SetTheme" CommandParameter="Dark"/>
                     <MenuItem Header="Light" Command="local:Commands.SetTheme" CommandParameter="Light"/>
                 </MenuItem>
-                </MenuItem>
+            </MenuItem>
 
             <MenuItem Header="Help">
                 <MenuItem Header="About" Command="local:Commands.ViewAbout" />

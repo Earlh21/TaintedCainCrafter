@@ -16,6 +16,8 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using AdonisUI;
 using Newtonsoft.Json;
+using TaintedCain.ViewModels;
+using TaintedCain.Windows;
 
 namespace TaintedCain
 {
@@ -58,6 +60,20 @@ namespace TaintedCain
 				((CollectionViewSource) Resources["ItemsView"]).View.Refresh();
 			}
 		}
+		
+		public RelayCommand SetSeed { get; set; } = new RelayCommand((sender) =>
+		{
+			var dialog = new SeedWindow();
+			var vm = dialog.DataContext as SeedViewModel;
+			vm.OnRequestClose += (s, e) => dialog.Close();
+
+			dialog.ShowDialog();
+				
+			if (vm.DataSubmit)
+			{
+				ItemManager.SetSeed(vm.Seed);
+			}
+		});
 
 		public MainWindow()
 		{
@@ -76,6 +92,9 @@ namespace TaintedCain
 					}
 				}
 			}
+
+			uint d = Crafting.StringToSeed("JKD9Z0C9");
+			int a = 3;
 
 			if (File.Exists(HighlightsPath))
 			{
@@ -109,6 +128,8 @@ namespace TaintedCain
 			//If this isn't set, the UI won't redraw when messages are received
 			//while Isaac is running in fullscreen
 			RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+
+			
 		}
 
 		private async Task CompanionServerAsync()
@@ -131,24 +152,30 @@ namespace TaintedCain
 						Byte[] buffer = new byte[2048];
 						client.Receive(buffer);
 
-						string message = System.Text.Encoding.Default.GetString(buffer);
+						string message = System.Text.Encoding.Default.GetString(buffer.TakeWhile((b => b != '\n')).ToArray());
+						
 
 						try
 						{
-							List<int> pickup_values = message.Replace("\n", "")
+							var values = message.Replace("\n", "")
 								.Replace("\r", "")
 								.Split(',')
-								.Select(p => Convert.ToInt32(p))
+								.Select(p => Convert.ToUInt32(p))
 								.ToList();
 
-							List<Pickup> pickups = new List<Pickup>();
-							for (int i = 0; i < pickup_values.Count; i++)
-							{
-								pickups.Add(new Pickup(i + 1, pickup_values[i]));
-							}
-
+							//Must be done to update Item recipes (ObservableCollections) from another thread
 							App.Current.Dispatcher.Invoke(delegate
 							{
+								//Clear first to prevent performance drop from recalculating recipes after setting seed
+								ItemManager.Clear();
+								ItemManager.SetSeed((uint)values[0]);
+
+								List<Pickup> pickups = new List<Pickup>();
+								for (int i = 1; i < values.Count; i++)
+								{
+									pickups.Add(new Pickup(i, (int)values[i]));
+								}
+
 								ItemManager.SetPickups(pickups);
 							});
 						}

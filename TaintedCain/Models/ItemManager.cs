@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace TaintedCain
@@ -16,6 +17,8 @@ namespace TaintedCain
 		
 		public ObservableCollection<Item> Items { get; } = new ObservableCollection<Item>();
 		public ObservableCollection<Pickup> Pickups { get; } = new ObservableCollection<Pickup>();
+
+		public uint Seed { get; private set; } = 0x77777770;
 
 		static ItemManager()
 		{
@@ -50,6 +53,24 @@ namespace TaintedCain
 			}
 		}
 
+		public void SetSeed(uint seed)
+		{
+			Seed = seed;
+			
+			List<Pickup> pickups = new List<Pickup>();
+			foreach (var pickup in Pickups)
+            {
+                pickups.Add(new Pickup(pickup.Id, pickup.Amount));
+            }
+			
+			SetPickups(pickups);
+		}
+
+		public void SetSeed(string seed)
+		{
+			SetSeed(Crafting.StringToSeed(seed));
+		}
+		
 		public void Clear()
 		{
 			foreach (Pickup pickup in Pickups)
@@ -195,7 +216,7 @@ namespace TaintedCain
 				}
 			}
 
-			int item_id = Crafting.CalculateCrafting(ids);
+			int item_id = Crafting.CalculateCrafting(ids, Seed);
 
 			Item existing_item = Items.FirstOrDefault(i => i.Id == item_id);
 			existing_item?.Recipes.Add(recipe);

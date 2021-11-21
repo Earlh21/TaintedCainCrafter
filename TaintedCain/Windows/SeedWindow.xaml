@@ -1,0 +1,39 @@
+﻿<Window x:Class="TaintedCain.Windows.SeedWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:TaintedCain.Windows"
+        xmlns:viewModels="clr-namespace:TaintedCain.ViewModels"
+        mc:Ignorable="d"
+        Name="SeedW"
+        Title="SeedWindow" Height="450" Width="800" ResizeMode="NoResize">
+    
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+    
+    <Window.DataContext>
+        <viewModels:SeedViewModel/>
+    </Window.DataContext>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <TextBox Grid.Row="0" Grid.Column="0" Margin="0,0,5,0" Text="{Binding Seed, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" MaxLength="8" Width="200" FontSize="26"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" TextChanged="Filter_TextChanged" CharacterCasing="Upper"/>
+        
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <Button Margin="0,0,5,0" Content="Save" Command="{Binding Submit}"/>
+            <Button Content="Cancel" Command="{Binding Cancel}"/>
+        </StackPanel>
+    </Grid>
+</Window>
