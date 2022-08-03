@@ -92,8 +92,6 @@ namespace TaintedCain
 				}
 			}
 
-			uint d = Crafting.StringToSeed("JKD9Z0C9");
-
 			if (File.Exists(HighlightsPath))
 			{
 				var item_highlights =
