@@ -93,7 +93,6 @@ namespace TaintedCain
 			}
 
 			uint d = Crafting.StringToSeed("JKD9Z0C9");
-			int a = 3;
 
 			if (File.Exists(HighlightsPath))
 			{
