@@ -16,9 +16,16 @@ namespace TaintedCain
 		public static Color[] AvailableColors { get; } =
 		{
 			Color.FromArgb(0, 0, 0, 0),
+			Color.FromArgb(100, 140, 140, 140),
+			Color.FromArgb(100, 0, 0, 0),
 			Color.FromArgb(100, 255, 0, 0),
 			Color.FromArgb(100, 0, 255, 0),
 			Color.FromArgb(100, 0, 0, 255),
+			Color.FromArgb(100, 255, 255, 0),
+			Color.FromArgb(100, 255, 0, 255),
+			Color.FromArgb(100, 0, 255, 255),
+			Color.FromArgb(100, 255, 165, 0),
+			Color.FromArgb(100, 75, 0, 130),
 		};
 
 		private static Color Highlighter { get; set; }

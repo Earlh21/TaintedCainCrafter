@@ -71,8 +71,11 @@ namespace TaintedCain
 			{
 				highlight_color = value;
 				NotifyPropertyChanged("HighlightColor");
+				NotifyPropertyChanged("HasHighlight");
 			}
 		}
+
+		public bool HasHighlight => highlight_color != Color.FromArgb(0, 0, 0, 0);
 
 		public bool IsBlacklisted
 		{
