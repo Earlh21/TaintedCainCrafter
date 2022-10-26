@@ -75,7 +75,7 @@ namespace TaintedCain
 			}
 		}
 
-		public bool HasHighlight => highlight_color != Color.FromArgb(0, 0, 0, 0);
+		public int HighlightOrder => 0 | highlight_color.A << 8 | highlight_color.G << 8 | highlight_color.B;
 
 		public bool IsBlacklisted
 		{

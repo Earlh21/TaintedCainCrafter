@@ -41,7 +41,7 @@
                 <system:String>HasRecipes</system:String>
             </CollectionViewSource.LiveFilteringProperties>
             <CollectionViewSource.SortDescriptions>
-                <componentModel:SortDescription PropertyName="HasHighlight" Direction="Descending"/>
+                <componentModel:SortDescription PropertyName="HighlightOrder" Direction="Descending"/>
                 <componentModel:SortDescription PropertyName="Id" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
