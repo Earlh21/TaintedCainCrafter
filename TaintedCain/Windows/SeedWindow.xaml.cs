@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TaintedCain.ViewModels;
 
 namespace TaintedCain.Windows
 {
@@ -11,6 +12,8 @@ namespace TaintedCain.Windows
     {
         public SeedWindow()
         {
+            DataContext = new SeedViewModel(Close);
+
             InitializeComponent();
         }
 

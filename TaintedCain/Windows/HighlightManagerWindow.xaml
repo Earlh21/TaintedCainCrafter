@@ -4,28 +4,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TaintedCain"
-        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase" xmlns:viewModels="clr-namespace:TaintedCain.ViewModels"
         mc:Ignorable="d"
         Title="Highlighter" MinHeight="450" MinWidth="800"
         Name="HWindow">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
-    </Window.Style> 
-    
-    <Window.CommandBindings>
-        <CommandBinding Command="local:Commands.SetHighlighter" Executed="SetHighlighter_OnExecute" />
-        <CommandBinding Command="local:Commands.SetItemHighlight" Executed="SetItemHighlight_OnExecute" />
-    </Window.CommandBindings>
-    
-    <Window.Resources>
-        <CollectionViewSource Source="{Binding ElementName=HWindow, Path=Items}"
-                              x:Key="ItemsView"
-                              Filter="ItemFilter">
-            <CollectionViewSource.SortDescriptions>
-                <componentModel:SortDescription PropertyName="Id" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-    </Window.Resources>
+    </Window.Style>
 
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
@@ -40,7 +25,7 @@
         </Grid.RowDefinitions>
 
         <ItemsControl Grid.Row="0" HorizontalAlignment="Center"
-                      ItemsSource="{Binding ElementName=HWindow, Path=AvailableColors}">
+                      ItemsSource="{Binding AvailableColors}">
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -51,7 +36,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Button Width="24" Height="24"
-                            Command="local:Commands.SetHighlighter" CommandParameter="{Binding}"
+                            Command="{Binding ElementName=HWindow, Path=DataContext.SetHighlighter}" CommandParameter="{Binding}"
                             Margin="5">
                         <Button.Background>
                             <SolidColorBrush Color="{Binding }" />
@@ -64,20 +49,18 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
             <TextBlock FontSize="15" Text="Name:" Margin="0,0,5,0" VerticalAlignment="Center" />
             <TextBox Width="200" Margin="0,0,50,0" 
-                     Text="{Binding Mode=TwoWay, ElementName=HWindow, Path=FilterName, 
-                        UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Mode=TwoWay, Path=FilterName, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Center"/>
 
             <TextBlock FontSize="15" Text="Description:" Margin="0,0,5,0" VerticalAlignment="Center" />
             <TextBox Width="200"
-                     Text="{Binding Mode=TwoWay, ElementName=HWindow, Path=FilterDescription,
-                        UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding Mode=TwoWay, Path=FilterDescription, UpdateSourceTrigger=PropertyChanged}"
                      VerticalAlignment="Center"/>
         </StackPanel>
         
         <ScrollViewer Grid.Row="2" HorizontalAlignment="Center"
                       VerticalScrollBarVisibility="auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource ItemsView}}">
+            <ItemsControl ItemsSource="{Binding ItemsView}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
@@ -91,7 +74,7 @@
                                    ToolTip="{Binding Path=Description}">
                                 <Image.InputBindings>
                                     <MouseBinding MouseAction="LeftClick"
-                                                  Command="local:Commands.SetItemHighlight"
+                                                  Command="{Binding ElementName=HWindow, Path=DataContext.SetItemHighlight}"
                                                   CommandParameter="{Binding}" />
                                 </Image.InputBindings>
                             </Image>

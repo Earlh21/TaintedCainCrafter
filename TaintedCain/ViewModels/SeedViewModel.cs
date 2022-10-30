@@ -5,26 +5,28 @@ namespace TaintedCain.ViewModels
 {
     public class SeedViewModel
     {
-        public EventHandler OnRequestClose;
+        public Action CloseAction { get; }
         public string Seed { get; set; } = "412";
         public bool DataSubmit { get; set; } = false;
         
         public RelayCommand Submit { get; set; }
         public RelayCommand Cancel { get; set; }
         
-        public SeedViewModel()
+        public SeedViewModel(Action close_action)
         {
-            Submit = new RelayCommand((sender) =>
+            CloseAction = close_action;
+
+            Submit = new RelayCommand(() =>
             {
                 DataSubmit = true;
-                OnRequestClose?.Invoke(this, EventArgs.Empty);
-            }, sender => Seed is {Length: 8} && Seed.All(char.IsLetterOrDigit));
+                CloseAction();
+            }, () => Seed.Length == 8 && Seed.All(char.IsLetterOrDigit));
             
             
-            Cancel = new RelayCommand((sender) =>
+            Cancel = new RelayCommand(() =>
             {
                 DataSubmit = false;
-                OnRequestClose?.Invoke(this, EventArgs.Empty);
+                CloseAction();
             });
         }
     }

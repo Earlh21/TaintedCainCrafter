@@ -5,31 +5,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TaintedCain"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase" xmlns:viewModels="clr-namespace:TaintedCain.ViewModels"
         mc:Ignorable="d"
-        Title="{Binding ElementName=IViewWindow, Path=Item.Name}" SizeToContent="WidthAndHeight"
+        Title="{Binding Item.Name}" SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        Name="IViewWindow">
-    
+        Name="IVWindow">
+
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
-    </Window.Style> 
-
-    <Window.Resources>
-        <CollectionViewSource Source="{Binding ElementName=IViewWindow, Path=Item.Recipes}"
-                              x:Key="RecipesView"
-                              Filter="RecipeFilter">
-            <CollectionViewSource.SortDescriptions>
-                <componentModel:SortDescription PropertyName="AverageQuality" Direction="Ascending"/>
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-    </Window.Resources>
-    
-    <Window.CommandBindings>
-        <CommandBinding Command="local:Commands.CraftItem" Executed="CraftItem_OnExecute" />
-        <CommandBinding Command="local:Commands.PlanItem" Executed="PlanItem_OnExecute"/>
-        <CommandBinding Command="local:Commands.BlacklistPickup" Executed="BlacklistPickup_OnExecute"/>
-    </Window.CommandBindings>
+    </Window.Style>
 
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
@@ -45,15 +29,15 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="{Binding ElementName=IViewWindow, Path=Item.Name}"
+        <TextBlock Grid.Row="0" Text="{Binding Item.Name}"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,10" />
 
         <Image HorizontalAlignment="Center" Width="64" Height="64" Grid.Row="1"
-               Source="{Binding ElementName=IViewWindow, Path=Item.Image}" />
+               Source="{Binding Item.Image}" />
 
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Row="2"
-                   Text="{Binding ElementName=IViewWindow, Path=Item.Description}"
+                   Text="{Binding Item.Description}"
                    Margin="0,0,0,10" />
 
         <TextBlock Grid.Row="3" Text="Click a pickup to blacklist it." HorizontalAlignment="Center"/>
@@ -62,7 +46,7 @@
                       VerticalScrollBarVisibility="Auto"
                       MaxHeight="400">
             <ItemsControl HorizontalAlignment="Center"
-                          ItemsSource="{Binding Source={StaticResource RecipesView}}">
+                          ItemsSource="{Binding ItemsView}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" />
@@ -87,7 +71,7 @@
                                                Margin="0,0,3,0">
                                             <Image.InputBindings>
                                                 <MouseBinding Gesture="LeftClick"
-                                                              Command="local:Commands.BlacklistPickup"
+                                                              Command="{Binding ElementName=IVWindow, Path=DataContext.BlacklistPickup}"
                                                               CommandParameter="{Binding}"/>
                                             </Image.InputBindings>
                                         </Image>
@@ -97,14 +81,14 @@
 
                             <Button Content="Craft"
                                     Padding="6,3"
-                                    Command="local:Commands.CraftItem"
+                                    Command="{Binding ElementName=IVWindow, Path=DataContext.CraftItem}"
                                     CommandParameter="{Binding}"
                                     VerticalAlignment="Center"
                                     Margin="0,0,8,0"/>
                             
                             <Button Content="Plan"
                                     Padding="6, 3"
-                                    Command="local:Commands.PlanItem"
+                                    Command="{Binding ElementName=IVWindow, Path=DataContext.PlanItem}"
                                     CommandParameter="{Binding}"
                                     VerticalAlignment="Center"/>
                         </StackPanel>

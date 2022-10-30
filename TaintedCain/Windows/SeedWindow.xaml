@@ -7,16 +7,12 @@
         xmlns:viewModels="clr-namespace:TaintedCain.ViewModels"
         mc:Ignorable="d"
         Name="SeedW"
-        Title="SeedWindow" Height="450" Width="800" ResizeMode="NoResize">
-    
+        Title="Seed" Height="450" Width="800" ResizeMode="NoResize">
+
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    
-    <Window.DataContext>
-        <viewModels:SeedViewModel/>
-    </Window.DataContext>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

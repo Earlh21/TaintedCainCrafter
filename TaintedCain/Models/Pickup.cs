@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media.Imaging;
 
-namespace TaintedCain
+namespace TaintedCain.Models
 {
 	public class Pickup : INotifyPropertyChanged
 	{

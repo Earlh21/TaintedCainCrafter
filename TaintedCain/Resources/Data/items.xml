@@ -5314,5 +5314,27 @@
     chargetype="timed"
     cache="damage firedelay"
   />
+  <passive
+    id="730"
+    gfx="Collectibles_730_GlassEye.png"
+    name="Glass Eye"
+    description="+0.75 Damage Up&#10;+1 Luck Up"
+    cache="damage luck"
+  />
+  <passive
+    id="731"
+    gfx="Collectibles_731_Stye.png"
+    name="Stye"
+    description="+28% Damage Up (right eye only)&#10;+7 Range Up (right eye only)&#10;-0.3 Shot Speed Down (right eye only)"
+    cache="damage range"
+  />
+  <passive
+    id="732"
+    gfx="Collectibles_732_MomsRing.png"
+    name="Mom's Ring"
+    description="+1 Damage Up&#10;Drops 1 random rune or soul stone when picked up&#10;Counts as 1 of 3 mom items needed towards the Mom transformation"
+    cache="damage"
+  />
+
   <!-- REPENTANCE END -->
 </items>

@@ -8,6 +8,7 @@ using System.Xml.XPath;
 
 namespace TaintedCain
 {
+    //Legacy crafting class
     public static class Crafting
     {
         private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Resources\\Data\\";
@@ -34,9 +35,6 @@ namespace TaintedCain
                         e => Convert.ToInt32(e.Attribute("quality").Value));
         }
 
-        /**
-		 * Taken from bladecoding on Github
-		 */
         public static uint StringToSeed(string seed)
         {
             var dict = new uint[256];

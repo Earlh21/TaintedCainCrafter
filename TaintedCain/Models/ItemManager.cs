@@ -2,73 +2,139 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using System.Xml.XPath;
+using TaintedCain.Models;
+using TaintedCain.Util;
 
-namespace TaintedCain
+namespace TaintedCain.Models
 {
 	public class ItemManager
 	{
 		private static readonly string DataFolder = AppDomain.CurrentDomain.BaseDirectory + "Resources\\Data\\";
-		
-		public static Dictionary<int, string> ItemNames { get; }
-		public static Dictionary<int, string> ItemDescriptions { get; }
-		
+		private Crafter crafter;
+		private List<ItemPool> item_pools { get; }
+
 		public ObservableCollection<Item> Items { get; } = new ObservableCollection<Item>();
 		public ObservableCollection<Pickup> Pickups { get; } = new ObservableCollection<Pickup>();
 
-		public uint Seed { get; private set; } = 0x77777770;
-
-		static ItemManager()
-		{
-			ItemNames =
-				XElement.Load(DataFolder + "items.xml")
-					.Elements()
-					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
-						e => e.Attribute("name").Value);
-			
-			ItemDescriptions =
-				XElement.Load(DataFolder + "items.xml")
-					.Elements()
-					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
-						e => e.Attribute("description").Value);
-		}
-
 		public ItemManager()
 		{
+			var culture_format = new CultureInfo("en-US");
+
+			var item_qualities =
+				XElement.Load(DataFolder + "items_metadata.xml")
+					.Elements("item")
+					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
+						e => Convert.ToInt32(e.Attribute("quality").Value));
+
+			var invalid_items = new int[] { 59, 656 };
+
+			var items = XElement.Load(DataFolder + "items.xml")
+				.Elements()
+				.Where(x => x.Name == "passive" || x.Name == "active" || x.Name == "familiar")
+				.Where(x => !invalid_items.Contains(Convert.ToInt32(x.Attribute("id").Value)))
+				.Select(item_xml =>
+				{
+					string name = item_xml.Attribute("name").Value;
+					string description = item_xml.Attribute("description").Value;
+					int id = Convert.ToInt32(item_xml.Attribute("id").Value);
+
+					string image_path = AppDomain.CurrentDomain.BaseDirectory + $"Resources\\Items\\{id}.png";
+
+					int quality = item_qualities[id];
+
+					return new Item(id, name, description, null, quality, image_path);
+				});
+
+			foreach(var item in items)
+            {
+				Items.Add(item);
+            }
+
+			item_pools =
+				XElement.Load(DataFolder + "itempools.xml")
+					.Elements()
+					.Select(pool_xml =>
+					{
+						string pool_name = pool_xml.Attribute("Name").Value;
+						var pool_items = pool_xml.Elements().Select(pool_item_xml =>
+						{
+							var item = Items.First(item => item.Id == Convert.ToInt32(pool_item_xml.Attribute("Id").Value));
+
+							var weight = Convert.ToSingle(pool_item_xml.Attribute("Weight").Value, culture_format);
+							return new Tuple<Item, float>(item, weight);
+						});
+
+						return new ItemPool(pool_name, pool_items.ToList());
+					}).ToList();
+
+			crafter = new Crafter("AAAAAAAA", item_pools, Items);
+
 			for (int i = 1; i <= 25; i++)
 			{
 				Pickup pickup = new Pickup(i);
 				pickup.PropertyChanged += PickupOnPropertyChanged;
 				Pickups.Add(pickup);
 			}
+		}
 
-			foreach (var item_entry in ItemNames)
+		public void SetModdedItems(List<Mod> mod_items)
+        {
+			//Remove current modded items
+			foreach (var item_pool in item_pools)
 			{
-				int id = item_entry.Key;
-				string name = item_entry.Value;
-				string description = ItemDescriptions[id];
-				Items.Add(new Item(id, name, description));
+				item_pool.Items = item_pool.Items.Where(entry => entry.Item1.Mod == null).ToList();
 			}
+
+			var vanilla_items = Items.Where(item => item.Mod == null).ToList();
+			Items.Clear();
+
+			foreach (var item in vanilla_items)
+			{
+				Items.Add(item);
+			}
+
+			//Add modded items
+			int start_id = Items.Max(item => item.Id) + 1;
+
+			foreach (var mod in mod_items)
+			{
+				foreach (var item in mod.Items)
+				{
+					item.Id += start_id - 1;
+					Items.Add(item);
+				}
+
+				start_id = mod.Items.Max(item => item.Id) + 1;
+
+				foreach (var item_pool in mod.ItemPools)
+				{
+					var existing_pool = item_pools.First(pool => pool.Name == item_pool.Name);
+					existing_pool.Items.AddRange(item_pool.Items);
+				}
+			}
+
+			//Recalculate recipes
+			var pickups = Pickups.Select(p => p.Copy()).ToList();
+			SetPickups(pickups);
 		}
 
 		public void SetSeed(uint seed)
 		{
-			Seed = seed;
-			
-			List<Pickup> pickups = new List<Pickup>();
-			foreach (var pickup in Pickups)
-            {
-                pickups.Add(new Pickup(pickup.Id, pickup.Amount));
-            }
-			
+			crafter.Seed = seed;
+
+			var pickups = Pickups.Select(p => p.Copy()).ToList();
 			SetPickups(pickups);
 		}
 
 		public void SetSeed(string seed)
 		{
-			SetSeed(Crafting.StringToSeed(seed));
+			SetSeed(Crafter.StringToSeed(seed));
 		}
 		
 		public void Clear()
@@ -194,7 +260,7 @@ namespace TaintedCain
 
 			for (int i = 1; i <= 25; i++)
 			{
-				empty_recipe.Add(new Pickup(i));
+				empty_recipe.Add(new Pickup(i, 0));
 			}
 
 			AddRecipesHelper(empty_recipe, 0, 0);
@@ -216,7 +282,7 @@ namespace TaintedCain
 				}
 			}
 
-			int item_id = Crafting.CalculateCrafting(ids, Seed);
+			int item_id = crafter.CalculateCrafting(ids);
 
 			Item existing_item = Items.FirstOrDefault(i => i.Id == item_id);
 			existing_item?.Recipes.Add(recipe);

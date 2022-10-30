@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace TaintedCain
+namespace TaintedCain.Models
 {
 	public class Recipe
 	{
