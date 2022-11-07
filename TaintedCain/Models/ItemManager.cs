@@ -30,7 +30,12 @@ namespace TaintedCain.Models
 				XElement.Load(DataFolder + "items_metadata.xml")
 					.Elements("item")
 					.ToDictionary(e => Convert.ToInt32(e.Attribute("id").Value),
-						e => Convert.ToInt32(e.Attribute("quality").Value));
+						e =>
+                        {
+							var quality_attribute = e.Attribute("craftquality") ?? e.Attribute("quality");
+
+							return Convert.ToInt32(quality_attribute.Value);
+                        });
 
 			var invalid_items = new int[] { 59, 656 };
 
