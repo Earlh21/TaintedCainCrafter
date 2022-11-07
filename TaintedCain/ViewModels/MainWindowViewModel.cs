@@ -353,6 +353,7 @@ namespace TaintedCain.ViewModels
 
             HandleOldSettings();
 
+            RefreshItemSettings();
             SetUiTheme(UserSettings.UiTheme);
             UseModdedItems = UserSettings.UseModdedItems;
 
